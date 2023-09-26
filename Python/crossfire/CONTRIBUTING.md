@@ -14,7 +14,7 @@ $ poetry install
 
 ## Test, linter and formatting
 
-To ensure everyone uses same code style, run [Black](https://black.readthedocs.io/en/stable/index.html), [Ruff](https://beta.ruff.rs/docs/) and tests before sending your code contributions:
+To ensure everyone uses same code style, run [Black](https://black.readthedocs.io/en/stable/index.html), [`isort`](https://pycqa.github.io/isort/), [Ruff](https://beta.ruff.rs/docs/) and tests before sending your code contributions:
 
 ```console
 $ poetry run pytest

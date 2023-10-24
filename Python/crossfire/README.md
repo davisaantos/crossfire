@@ -36,26 +36,28 @@ To have access to the API data, [registration is required](https://api.fogocruza
 
 ## Environmental variables
 
-The `email` and `password` used in the registration must be configured as `FOGOCRUZADO_EMAIL` and `FOGOCRUZADO_PASSWORD` environment variables in a `.env` file.
+The `email` and `password` used in the registration must be configured as `FOGOCRUZADO_EMAIL` and `FOGOCRUZADO_PASSWORD` environment variables in a `.env` file:
 
-````commandline
-#.env
+```env
 FOGOCRUZADO_EMAIL=your@mail.com
 FOGOCRUZADO_PASSWORD=YOUR_PASSWORD
-````
+```
 
 ### List of states covered by the project
 
 Get all states with at least one city covered by the Fogo Cruzado project:
+
 ```python
-from crossfire import Client
-client = Client()
-client.states()
+from crossfire import states
+
+
+states()
 ```
 
 It is possible to get results in `DataFrae`:
+
 ```python
-client.states(format='df')
+states(format='df')
 ```
 
 ### List of cities covered by the project
@@ -63,14 +65,16 @@ client.states(format='df')
 Get cities from a specific state covered by the Fogo Cruzado project.
 
 ```python
-from crossfire import Client
-client = Client()
-client.cities()
+from crossfire import cities
+
+
+cities()
 ```
 
 It is possible to get results in `DataFrae`:
+
 ```python
-client.cities(format='df')
+cities(format='df')
 ```
 
 ### Listing occurences
@@ -78,18 +82,22 @@ client.cities(format='df')
 To get shooting occurences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
 
 ```python
-from crossfire import Client, Occurences
-client = Client()
-Occurences(client, state_id='813ca36b-91e3-4a18-b408-60b27a1942ef')
+from crossfire import occurences
+
+
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
 It is possible to get results in `DataFrae`:
+
 ```python
-Occurences(client, state_id='813ca36b-91e3-4a18-b408-60b27a1942ef', format='df')
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='df')
 ```
+
 Or as `GeoDataFrame`:
+
 ```python
-Occurences(client, state_id='813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 ```
 
 ## Custom credentials usage
@@ -99,17 +107,31 @@ If not using the environment variables for authentication, it is recommended to 
 ```python
 from crossfire import Client
 
-client = Client(email="fogo@cruza.do", password="Rio&Pernambuco")
+
+client = Client(email="fogo@cruza.do", password="Rio&Pernambuco")  # credenciais opcionais, o padrão são as variáveis de ambiente
 client.states()
 client.cities()
+client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+```
+
+## Uso assíncrono com `asyncio`
+
+```python
+from crossfire import AsyncClient
+
+
+client = AsyncClient()  # credenciais opcionais, o padrão são as variáveis de ambiente
+await client.states()
+await client.cities()
+await client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
 ## Credits
 
-@FelipeSBarros is the creator of the Python package. This implementation was funded by CYTED project number `520RT0010 redGeoLIBERO`.
+[@FelipeSBarros](https://github.com/FelipeSBarros) is the creator of the Python package. This implementation was funded by CYTED project number `520RT0010 redGeoLIBERO`.
 
 ### Contributors
 
-* @sergiospagnuolo
-* @silvadenisson
-* @cuducos
+* [@sergiospagnuolo](https://github.com/sergiospagnuolo)
+* [@silvadenisson](https://github.com/silvadenisson)
+* [@cuducos](https://github.com/cuducos)

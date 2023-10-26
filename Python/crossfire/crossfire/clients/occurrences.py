@@ -14,9 +14,8 @@ try:
 except ImportError:
     pass
 
-from crossfire.errors import CrossfireError
+from crossfire.errors import CrossfireError, RetryAfterError
 from crossfire.logger import Logger
-from crossfire.parser import RetryAfterError
 
 logger = Logger(__name__)
 

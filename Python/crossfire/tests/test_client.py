@@ -8,6 +8,7 @@ from crossfire.clients import (
     Client,
     CredentialsNotFoundError,
     IncorrectCredentialsError,
+    RetryAfterError,
     Token,
 )
 from crossfire.parser import UnknownFormatError
@@ -100,6 +101,15 @@ async def test_client_inserts_auth_on_http_get_without_overwriting(client_and_ge
     mock.assert_called_once_with(
         "my-url", headers={"Authorization": "Bearer 42", "answer": "fourty-two"}
     )
+
+
+@mark.asyncio
+async def test_client_raises_error_for_too_many_requests(client_and_get_mock):
+    client, mock = client_and_get_mock
+    mock.return_value.status_code = 429
+    mock.return_value.headers = {"Retry-After": "42"}
+    with raises(RetryAfterError):
+        await client.get()
 
 
 def test_client_load_states(state_client_and_get_mock):

@@ -35,16 +35,6 @@ class IncompatibleDataError(CrossfireError):
     pass
 
 
-class RetryAfterError(Exception):
-    def __init__(self, retry_after):
-        self.retry_after = retry_after
-        message = (
-            "Got HTTP Status 429 Too Many Requests. "
-            f"Retry after {self.retry_after} seconds"
-        )
-        super().__init__(message)
-
-
 def to_geo_dataframe(df):
     if not {"latitude_ocorrencia", "longitude_ocorrencia"}.issubset(df.columns):
         raise IncompatibleDataError(
@@ -82,39 +72,27 @@ class Metadata:
         return cls(**kwargs)
 
 
-def parse_response(method):
-    async def wrapper(self, *args, **kwargs):
-        """Converts API response to a dictionary, Pandas DataFrame or GeoDataFrame."""
-        format = kwargs.pop("format", None)
-        if format and format not in FORMATS:
-            raise UnknownFormatError(format)
+def parse_response(response, format=None):
+    """Converts API response to a dictionary, Pandas DataFrame or GeoDataFrame."""
+    if format and format not in FORMATS:
+        raise UnknownFormatError(format)
 
-        response = await method(self, *args, **kwargs)
-        if response.status_code == 429:
-            try:
-                wait = int(response.headers.get("retry-after") or 1)
-            except ValueError:
-                wait = 1
-            raise RetryAfterError(wait)
+    try:
+        contents = response.json()
+    except:
+        logger.error(
+            "Failed to decode response as JSON (HTTP Status "
+            f"{response.status_code} {response.url} {response.headers}): {response.text}"
+        )
+        raise
 
-        try:
-            contents = response.json()
-        except:
-            logger.error(
-                "Failed to decode response as JSON (HTTP Status "
-                f"{response.status_code} {response.url} {response.headers}): {response.text}"
-            )
-            raise
+    metadata = Metadata.from_response(contents)
+    data = contents.get("data", [])
 
-        metadata = Metadata.from_response(contents)
-        data = contents.get("data", [])
+    if HAS_GEOPANDAS and format == "geodf":
+        return to_geo_dataframe(DataFrame(data)), metadata
 
-        if HAS_GEOPANDAS and format == "geodf":
-            return to_geo_dataframe(DataFrame(data)), metadata
+    if HAS_PANDAS and format == "df":
+        return DataFrame(data), metadata
 
-        if HAS_PANDAS and format == "df":
-            return DataFrame(data), metadata
-
-        return data, metadata
-
-    return wrapper
+    return data, metadata

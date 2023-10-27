@@ -1,92 +1,81 @@
+from json import dumps
+from unittest.mock import Mock, patch
+
 from geopandas import GeoDataFrame
 from pandas import DataFrame
-from pytest import mark, raises
+from pytest import raises
 
-from crossfire.parser import (
-    IncompatibleDataError,
-    RetryAfterError,
-    UnknownFormatError,
-    parse_response,
-)
+from crossfire.parser import IncompatibleDataError, UnknownFormatError, parse_response
+
+DATA = [{"answer": 42}]
+GEODATA = [{"answer": 42, "latitude_ocorrencia": 4, "longitude_ocorrencia": 2}]
 
 
-class DummyResponse:
-    DATA = [{"answer": 42}]
-    GEODATA = [{"answer": 42, "latitude_ocorrencia": 4, "longitude_ocorrencia": 2}]
-
-    def __init__(self, geo, has_next_page, status_code):
-        self.geo = geo
-        self.has_next_page = has_next_page
-        self.status_code = status_code
-        if status_code == 429:
-            self.headers = {"retry-after": 42}
-
-    def json(self):
-        data = self.GEODATA if self.geo else self.DATA
-        return {"pageMeta": {"hasNextPage": self.has_next_page}, "data": data}
+class DummyError(Exception):
+    pass
 
 
-class DummyClient:
-    def __init__(self, geo=False, has_next_page=False, status_code=200):
-        self.response = DummyResponse(
-            geo=geo, has_next_page=has_next_page, status_code=status_code
-        )
+def create_response(geo=False, has_next_page=False):
+    data = {
+        "pageMeta": {
+            "hasNextPage": has_next_page,
+            "pageCount": 42 if has_next_page else 1,
+        },
+        "data": GEODATA if geo else DATA,
+    }
 
-    @parse_response
-    async def get(self, *args, **kwargs):
-        return self.response
+    response = Mock()
+    response.url = "http://127.0.0.1/"
+    response.status_code = 200
+    response.text = dumps(data)
+    response.json.return_value = data
+    return response
 
 
-@mark.asyncio
-async def test_parse_response_raises_error_for_unknown_format():
-    client = DummyClient()
+def test_parse_response_raises_error_for_unknown_format():
     with raises(UnknownFormatError):
-        await client.get(format="parquet")
+        parse_response(None, format="parquet")
 
 
-@mark.asyncio
-async def test_parse_response_uses_dict_by_default():
-    client = DummyClient()
-    data, _ = await client.get()
+def test_parse_response_raises_error_when_cannot_parse_json():
+    response = create_response()
+    response.json.side_effect = DummyError()
+    with raises(DummyError), patch("crossfire.parser.Logger") as mock:
+        parse_response(response)
+        mock.return_value.error.assert_called_once()
+        msg, *_ = mock.return_value.error.call_args.args
+        assert response.status_code in msg
+        assert response.url in msg
+        assert response.text in msg
+
+
+def test_parse_response_uses_dict_by_default():
+    data, _ = parse_response(create_response())
     assert isinstance(data, list)
     for obj in data:
         assert isinstance(obj, dict)
 
 
-@mark.asyncio
-async def test_parse_response_handles_metadata():
-    paginated = DummyClient(has_next_page=True)
-    _, metadata = await paginated.get()
+def test_parse_response_handles_metadata():
+    _, metadata = parse_response(create_response(has_next_page=True))
     assert metadata.has_next_page
+    assert metadata.page_count == 42
 
-    not_paginated = DummyClient()
-    _, metadata = await not_paginated.get()
+    _, metadata = parse_response(create_response())
     assert not metadata.has_next_page
+    assert metadata.page_count == 1
 
 
-@mark.asyncio
-async def test_parse_response_uses_dataframe_when_specified():
-    client = DummyClient()
-    data, _ = await client.get(format="df")
+def test_parse_response_uses_dataframe_when_specified():
+    data, _ = parse_response(create_response(), format="df")
     assert isinstance(data, DataFrame)
 
 
-@mark.asyncio
-async def test_parse_response_uses_geodataframe_when_specified():
-    client = DummyClient(geo=True)
-    data, _ = await client.get(geo=True, format="geodf")
+def test_parse_response_uses_geodataframe_when_specified():
+    data, _ = parse_response(create_response(True), format="geodf")
     assert isinstance(data, GeoDataFrame)
 
 
-@mark.asyncio
-async def test_parse_response_raises_error_when_missing_coordinates():
-    client = DummyClient()
+def test_parse_response_raises_error_when_missing_coordinates():
     with raises(IncompatibleDataError):
-        await client.get(geo=True, format="geodf")
-
-
-@mark.asyncio
-async def test_parse_response_raises_error_for_too_many_requests():
-    client = DummyClient(status_code=429)
-    with raises(RetryAfterError):
-        await client.get()
+        parse_response(create_response(), format="geodf")

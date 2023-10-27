@@ -6,7 +6,7 @@ from decouple import UndefinedValueError, config
 from httpx import AsyncClient
 
 from crossfire.clients.occurrences import Occurrences
-from crossfire.errors import CrossfireError
+from crossfire.errors import CrossfireError, RetryAfterError
 from crossfire.parser import parse_response
 
 
@@ -66,11 +66,10 @@ class Client:
         )
         return self.cached_token.value
 
-    @parse_response
     async def get(self, *args, **kwargs):
         """Wraps `httpx.get` to inject the authorization header. Also, accepts the
-        `format` argument consumed by the `parse_response` decorator, which removes it
-        before passing the arguments to `httpx.get`."""
+        `format` argument consumed by the `parse_response` decorator."""
+        format = kwargs.pop("format", None)
         token = await self.token()
         auth = {"Authorization": f"Bearer {token}"}
 
@@ -79,7 +78,16 @@ class Client:
         else:
             kwargs["headers"].update(auth)
 
-        return await self.client.get(*args, **kwargs)
+        response = await self.client.get(*args, **kwargs)
+        if response.status_code == 429:
+            try:
+                wait = int(response.headers.get("retry-after") or 1)
+            except ValueError:
+                wait = 1
+            raise RetryAfterError(wait)
+
+        response.raise_for_status()
+        return parse_response(response, format=format)
 
     async def _states(self, format=None):
         return await self.get(f"{self.URL}/states", format=format)

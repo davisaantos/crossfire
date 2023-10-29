@@ -5,7 +5,7 @@ description = "crossfire: Download spatial data sets from crossfire project"
 authors = ["Felipe Barros <felipe.b4rros@gmail.com>"]
 readme = "README.md"
 homepage = "https://fogocruzado.org.br/"
-repository = "https://github.com/voltdatalab/crossfire"
+repository = "https://github.com/felipesbarros/crossfire"
 classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
@@ -14,8 +14,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization",
     "Programming Language :: Python",
 ]
-exclude =  ["man/", "R/", "tables/", "crossfire.Rproj", "DESCRIPTION", "env-example", "Introducao_crossfire.md",
-    "Introduction_crossfire.md", "NAMESPACE",]
+exclude =  ["env-example"]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.13"

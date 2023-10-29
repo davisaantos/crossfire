@@ -30,18 +30,20 @@ If you want to have access to the data as [GeoPandas `GeoDataFrame`s](https://ge
 $ pip install crossfire[geodf]
 ```
 
-## User registration
+## Authentication
 
 To have access to the API data, [registration is required](https://api.fogocruzado.org.br/sign-up).
 
-## Environmental variables
-
-The `email` and `password` used in the registration must be configured as `FOGOCRUZADO_EMAIL` and `FOGOCRUZADO_PASSWORD` environment variables in a `.env` file:
+The `email` and `password` used in the registration can be configured as `FOGOCRUZADO_EMAIL` and `FOGOCRUZADO_PASSWORD` environment variables in a `.env` file:
 
 ```env
 FOGOCRUZADO_EMAIL=your@mail.com
 FOGOCRUZADO_PASSWORD=YOUR_PASSWORD
 ```
+
+If you prefer _not_ to use these environment variables, you can still use the credetials [when instantiating a client](#custom-client).
+
+## Usage
 
 ### List of states covered by the project
 
@@ -100,7 +102,7 @@ Or as `GeoDataFrame`:
 occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 ```
 
-## Custom credentials usage
+### Custom client
 
 If not using the environment variables for authentication, it is recommended to use a custom client:
 
@@ -108,19 +110,19 @@ If not using the environment variables for authentication, it is recommended to 
 from crossfire import Client
 
 
-client = Client(email="fogo@cruza.do", password="Rio&Pernambuco")  # credenciais opcionais, o padrão são as variáveis de ambiente
+client = Client(email="fogo@cruza.do", password="Rio&Pernambuco") # credentials are optional, the default are the environment variables
 client.states()
 client.cities()
 client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
-## Uso assíncrono com `asyncio`
+### Uso assíncrono com `asyncio`
 
 ```python
 from crossfire import AsyncClient
 
 
-client = AsyncClient()  # credenciais opcionais, o padrão são as variáveis de ambiente
+client = AsyncClient()  # credentials are optional, the default are the environment variables
 await client.states()
 await client.cities()
 await client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')

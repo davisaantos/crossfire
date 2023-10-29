@@ -1,58 +1,137 @@
-
+<div style="text-align: center">
 <img src="https://raw.githubusercontent.com/voltdatalab/crossfire/master/crossfire_hexagono.png" width="130px" alt="hexagon crossfire"/>
 
+# `crossfire` Python client
+</div>
 
-# crossfire
+`crossfire` is a package created to give easier access to [Fogo Cruzado](https://fogocruzado.org.br/)'s datasets, which is a digital collaborative platform of gun shooting occurences in the metropolitan areas of Rio de Janeiro and Recife.
 
-`crossfire` is a package created to give easier access to the datasets of the project [Fogo Cruzado](https://fogocruzado.org.br/), which is a digital collaboration platform to register gun shootings in the metropolitan areas of Rio de Janeiro and Recife.
+The package facilitates data extraction from [Fogo Cruzado's open API](https://api.fogocruzado.org.br/).
 
-The package facilitates data extraction from the [project open-data API](https://api.fogocruzado.org.br/), developed by [Volt Data Lab](https://www.voltdata.info/en-lg).
+## Requirements
 
-**Please note that as of Nov. 2020, due to changes in Fogo Cruzado's API, user's should update `crossfire` to its' `0.2.0` version**. The `get_fogocruzado()` function from the `0.1.0` version returns errors and cannot be used.
+* Python 3.9 or newer
 
-## Installing and loading the package
+## Install
 
-Currently, the `crossfire` package can be installed directly from its GitHub repository:
-
-```
-if (!require("devtools")) install.packages("devtools")
-devtools::install_github("voltdatalab/crossfire")
-
-library(crossfire)
+```console
+$ pip install crossfire
 ```
 
-## Functions
+If you want to have access to the data as [Pandas `DataFrame`s](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html):
 
-`crossfire` has 3 functions: `fogocruzado_signin`, `get_fogocruzado` and `get_cities`.
-
-* `fogocruzado_signin` is used to give access to Fogo Cruzado's API. To access Fogo Cruzado's API, [users should be registered](https://api.fogocruzado.org.br/register) and insert their e-mail and password for authentication. Thus, the function registers these information on the current R session, so that it can be used to obtain the Bearer token to extract data using the API. 
-
-* `get_fogocruzado` extracts slices or the whole dataset of shootings registered by Fogo Cruzado. The function returns a data frame, in which each line corresponds to a shooting registered and its information. It can also filter the data according to some parameters,  city/state - `city` and `state` -, initial and final date - `initial_date` and `final_date` -, and the presence of security forces - `security_agent`. One should note that each request using the `crossfire` package needs to be under a 210 days (roughly 7 months) time interval, from any portion of the full dataset.
-
-```
-# Extract data for all registered shootings
-fogocruzado_all <- get_fogocruzado()
-
-# Extract data for shootings in the cities of Rio de Janeiro and Recife in 2018
-fogocruzado_rj_recife <- get_fogocruzado(city = c("Rio de Janeiro", "Recife"),
-                                         initial_date = "2018-07-01", final_date = "2018-12-31")
-
-# Extract data from occurents reported by the police and in which security agents were present
-fogocruzado_security <- get_fogocruzado(security_agent = 1, source = 2)
+```console
+$ pip install crossfire[df]
 ```
 
-* `get_cities()` returns a `data.frame` with information about all cities from the Rio de Janeiro and Recife metropolitan areas covered by the Fogo Cruzado initiative.
+If you want to have access to the data as [GeoPandas `GeoDataFrame`s](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.html):
 
-## More information
+```console
+$ pip install crossfire[geodf]
+```
 
-For more information on how the package works and for a complete list of functions, see:  
-* the vignettes (in [English](https://github.com/voltdatalab/crossfire/blob/master/Introduction_crossfire.md) and [Portuguese](https://github.com/voltdatalab/crossfire/blob/master/Introducao_crossfire.md)), if using R package;
-* the [tutorials](https://github.com/FelipeSBarros/crossfire_tutorial) using python module;
+## User registration
 
-## Authors
+To have access to the API data, [registration is required](https://api.fogocruzado.org.br/sign-up).
 
-[Lucas Gelape](https://github.com/lgelape), for [Volt Data Lab](https://www.voltdata.info/en-lg).
+## Environmental variables
 
-## Contributors
+The `email` and `password` used in the registration must be configured as `FOGOCRUZADO_EMAIL` and `FOGOCRUZADO_PASSWORD` environment variables in a `.env` file:
 
-[Sérgio Spagnuolo](https://github.com/voltdatalab) and [Denisson Silva](https://github.com/silvadenisson).
+```env
+FOGOCRUZADO_EMAIL=your@mail.com
+FOGOCRUZADO_PASSWORD=YOUR_PASSWORD
+```
+
+### List of states covered by the project
+
+Get all states with at least one city covered by the Fogo Cruzado project:
+
+```python
+from crossfire import states
+
+
+states()
+```
+
+It is possible to get results in `DataFrae`:
+
+```python
+states(format='df')
+```
+
+### List of cities covered by the project
+
+Get cities from a specific state covered by the Fogo Cruzado project.
+
+```python
+from crossfire import cities
+
+
+cities()
+```
+
+It is possible to get results in `DataFrae`:
+
+```python
+cities(format='df')
+```
+
+### Listing occurences
+
+To get shooting occurences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
+
+```python
+from crossfire import occurences
+
+
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+```
+
+It is possible to get results in `DataFrae`:
+
+```python
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='df')
+```
+
+Or as `GeoDataFrame`:
+
+```python
+occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
+```
+
+## Custom credentials usage
+
+If not using the environment variables for authentication, it is recommended to use a custom client:
+
+```python
+from crossfire import Client
+
+
+client = Client(email="fogo@cruza.do", password="Rio&Pernambuco")  # credenciais opcionais, o padrão são as variáveis de ambiente
+client.states()
+client.cities()
+client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+```
+
+## Uso assíncrono com `asyncio`
+
+```python
+from crossfire import AsyncClient
+
+
+client = AsyncClient()  # credenciais opcionais, o padrão são as variáveis de ambiente
+await client.states()
+await client.cities()
+await client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+```
+
+## Credits
+
+[@FelipeSBarros](https://github.com/FelipeSBarros) is the creator of the Python package. This implementation was funded by CYTED project number `520RT0010 redGeoLIBERO`.
+
+### Contributors
+
+* [@sergiospagnuolo](https://github.com/sergiospagnuolo)
+* [@silvadenisson](https://github.com/silvadenisson)
+* [@cuducos](https://github.com/cuducos)

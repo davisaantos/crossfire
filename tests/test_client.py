@@ -5,7 +5,7 @@ from decouple import UndefinedValueError
 from pytest import mark, raises
 
 from crossfire.clients import (
-    Client,
+    AsyncClient,
     CredentialsNotFoundError,
     IncorrectCredentialsError,
     RetryAfterError,
@@ -23,12 +23,12 @@ def test_client_does_not_initiate_with_proper_credentials():
     with patch("crossfire.clients.config") as mock:
         mock.side_effect = UndefinedValueError()
         with raises(CredentialsNotFoundError):
-            Client()
+            AsyncClient()
 
 
 def test_client_initiates_with_credentials_from_kwargs():
     credentials_kwargs = {"email": "email.kwargs", "password": "password.kwargs"}
-    client = Client(**credentials_kwargs)
+    client = AsyncClient(**credentials_kwargs)
     assert client.credentials["email"] == "email.kwargs"
     assert client.credentials["password"] == "password.kwargs"
 

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import httpx
 from pytest import fixture
 
-from crossfire.clients import Client, Token
+from crossfire.clients import AsyncClient, Token
 
 DEFAULT_TOKEN_EXPIRES_IN = 3600
 TOKEN = Token("42", DEFAULT_TOKEN_EXPIRES_IN)
@@ -26,7 +26,7 @@ def async_respond_with(method_name, data):
 def client():
     with patch("crossfire.clients.config") as mock:
         mock.side_effect = ("email", "password")
-        client = Client()
+        client = AsyncClient()
         client.URL = "http://127.0.0.1/api/v2"
         yield client
 

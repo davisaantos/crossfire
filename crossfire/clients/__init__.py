@@ -29,7 +29,7 @@ class Token:
         return datetime.now() < self.valid_until
 
 
-class Client:
+class AsyncClient:
     URL = "https://api-service.fogocruzado.org.br/api/v2"
 
     def __init__(self, email=None, password=None, max_parallel_requests=None):

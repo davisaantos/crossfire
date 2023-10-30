@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from unittest.mock import AsyncMock, Mock, patch
 
-from httpx import AsyncClient
+import httpx
 from pytest import fixture
 
 from crossfire.clients import Client, Token
@@ -17,7 +17,7 @@ def async_respond_with(method_name, data):
     for HTTP methods and regular mocks for the `json` call."""
     mock = Mock()
     mock.json.return_value = data
-    with patch.object(AsyncClient, method_name, new_callable=AsyncMock) as method:
+    with patch.object(httpx.AsyncClient, method_name, new_callable=AsyncMock) as method:
         method.return_value = mock
         yield method
 

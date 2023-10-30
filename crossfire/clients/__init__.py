@@ -2,8 +2,8 @@ from asyncio import get_event_loop
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
+import httpx
 from decouple import UndefinedValueError, config
-from httpx import AsyncClient
 
 from crossfire.clients.occurrences import Occurrences
 from crossfire.errors import CrossfireError, RetryAfterError
@@ -43,7 +43,7 @@ class Client:
         except UndefinedValueError:
             raise CredentialsNotFoundError("FOGOCRUZADO_PASSWORD")
 
-        self.client = AsyncClient(default_encoding="utf-8")
+        self.client = httpx.AsyncClient(default_encoding="utf-8")
         self.credentials = {"email": email, "password": password}
         self.cached_token = None
 

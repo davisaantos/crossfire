@@ -112,9 +112,10 @@ async def test_client_raises_error_for_too_many_requests(client_and_get_mock):
         await client.get()
 
 
-def test_client_load_states(state_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_states(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
-    states = client.states()
+    states, _ = await client.states()
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/states",
         headers={"Authorization": "Bearer 42"},
@@ -123,9 +124,10 @@ def test_client_load_states(state_client_and_get_mock):
     assert states[0]["name"] == "Rio de Janeiro"
 
 
-def test_client_load_states_as_df(state_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_states_as_df(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
-    states = client.states(format="df")
+    states, _ = await client.states(format="df")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/states",
         headers={"Authorization": "Bearer 42"},
@@ -134,10 +136,11 @@ def test_client_load_states_as_df(state_client_and_get_mock):
     assert states.name[0] == "Rio de Janeiro"
 
 
-def test_client_load_states_raises_format_error(state_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_states_raises_format_error(state_client_and_get_mock):
     client, _ = state_client_and_get_mock
     with raises(UnknownFormatError):
-        client.states(format="parquet")
+        await client.states(format="parquet")
 
 
 def test_client_load_cities(city_client_and_get_mock):

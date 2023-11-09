@@ -89,13 +89,8 @@ class AsyncClient:
         response.raise_for_status()
         return parse_response(response, format=format)
 
-    async def _states(self, format=None):
+    async def states(self, format=None):
         return await self.get(f"{self.URL}/states", format=format)
-
-    def states(self, format=None):
-        loop = get_event_loop()
-        states, _ = loop.run_until_complete(self._states(format=format))
-        return states
 
     async def _cities(self, city_id=None, city_name=None, state_id=None, format=None):
         params = {"cityId": city_id, "cityName": city_name, "stateId": state_id}

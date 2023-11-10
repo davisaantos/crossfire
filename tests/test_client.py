@@ -115,13 +115,15 @@ async def test_client_raises_error_for_too_many_requests(client_and_get_mock):
 @mark.asyncio
 async def test_client_load_states(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
-    states, _ = await client.states()
+    states, metadata = await client.states()
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/states",
         headers={"Authorization": "Bearer 42"},
     )
     assert len(states) == 1
     assert states[0]["name"] == "Rio de Janeiro"
+    assert not metadata.has_next_page
+    assert not metadata.page_count
 
 
 @mark.asyncio

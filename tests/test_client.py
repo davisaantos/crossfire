@@ -122,8 +122,12 @@ async def test_client_load_states(state_client_and_get_mock):
     )
     assert len(states) == 1
     assert states[0]["name"] == "Rio de Janeiro"
-    assert not metadata.has_next_page
+    assert not metadata.page
+    assert not metadata.take
+    assert not metadata.item_count
     assert not metadata.page_count
+    assert not metadata.has_previous_page
+    assert not metadata.has_next_page
 
 
 @mark.asyncio

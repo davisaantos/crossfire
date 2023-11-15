@@ -1,4 +1,3 @@
-from asyncio import get_event_loop
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
@@ -113,5 +112,4 @@ class AsyncClient:
             max_parallel_requests=max_parallel_requests,
             format=format,
         )
-        loop = get_event_loop()
-        return loop.run_until_complete(occurrences())
+        return occurrences()

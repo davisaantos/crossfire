@@ -220,9 +220,10 @@ async def test_client_load_cities_with_more_than_one_params(city_client_and_get_
     )
 
 
-def test_client_occurrences(occurrences_client_and_get_mock):
+@mark.asyncio
+async def test_client_occurrences(occurrences_client_and_get_mock):
     client, mock = occurrences_client_and_get_mock
-    client.occurrences(42)
+    await client.occurrences(42)
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&page=1",
         headers={"Authorization": "Bearer 42"},

@@ -92,19 +92,10 @@ class AsyncClient:
     async def states(self, format=None):
         return await self.get(f"{self.URL}/states", format=format)
 
-    async def _cities(self, city_id=None, city_name=None, state_id=None, format=None):
+    async def cities(self, city_id=None, city_name=None, state_id=None, format=None):
         params = {"cityId": city_id, "cityName": city_name, "stateId": state_id}
         cleaned = urlencode({key: value for key, value in params.items() if value})
         return await self.get(f"{self.URL}/cities?{cleaned}", format=format)
-
-    def cities(self, city_id=None, city_name=None, state_id=None, format=None):
-        loop = get_event_loop()
-        cities, _ = loop.run_until_complete(
-            self._cities(
-                city_id=city_id, city_name=city_name, state_id=state_id, format=format
-            )
-        )
-        return cities
 
     def occurrences(
         self,

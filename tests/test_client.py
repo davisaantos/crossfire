@@ -149,20 +149,28 @@ async def test_client_load_states_raises_format_error(state_client_and_get_mock)
         await client.states(format="parquet")
 
 
-def test_client_load_cities(city_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_cities(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    cities = client.cities()
+    cities, metadata = await client.cities()
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?",
         headers={"Authorization": "Bearer 42"},
     )
     assert cities[0]["name"] == "Rio de Janeiro"
     assert cities[0]["state"]["name"] == "Estado da Guanabara"
+    assert not metadata.page
+    assert not metadata.take
+    assert not metadata.item_count
+    assert not metadata.page_count
+    assert not metadata.has_previous_page
+    assert not metadata.has_next_page
 
 
-def test_client_load_cities_as_dictionary(city_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_cities_as_dictionary(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    cities = client.cities(format="dict")
+    cities, metadata = await client.cities(format="dict")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?",
         headers={"Authorization": "Bearer 42"},
@@ -172,36 +180,40 @@ def test_client_load_cities_as_dictionary(city_client_and_get_mock):
     assert cities[0]["state"]["name"] == "Estado da Guanabara"
 
 
-def test_client_load_cities_with_city_id(city_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_cities_with_city_id(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    client.cities(city_id="21")
+    await client.cities(city_id="21")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?cityId=21",
         headers={"Authorization": "Bearer 42"},
     )
 
 
-def testclientes_with_city_name(city_client_and_get_mock):
+@mark.asyncio
+async def testclientes_with_city_name(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    client.cities(city_name="Rio de Janeiro")
+    await client.cities(city_name="Rio de Janeiro")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?cityName=Rio+de+Janeiro",
         headers={"Authorization": "Bearer 42"},
     )
 
 
-def test_client_load_cities_with_state_id(city_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_cities_with_state_id(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    client.cities(state_id="42")
+    await client.cities(state_id="42")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?stateId=42",
         headers={"Authorization": "Bearer 42"},
     )
 
 
-def test_client_load_cities_with_more_than_one_params(city_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_cities_with_more_than_one_params(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    client.cities(state_id="42", city_name="Rio de Janeiro")
+    await client.cities(state_id="42", city_name="Rio de Janeiro")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?cityName=Rio+de+Janeiro&stateId=42",
         headers={"Authorization": "Bearer 42"},

@@ -96,7 +96,7 @@ class AsyncClient:
         cleaned = urlencode({key: value for key, value in params.items() if value})
         return await self.get(f"{self.URL}/cities?{cleaned}", format=format)
 
-    def occurrences(
+    async def occurrences(
         self,
         id_state,
         id_cities=None,
@@ -112,4 +112,4 @@ class AsyncClient:
             max_parallel_requests=max_parallel_requests,
             format=format,
         )
-        return occurrences()
+        return await occurrences()

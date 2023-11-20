@@ -34,12 +34,16 @@ def test_client_initiates_with_credentials_from_kwargs():
 
 
 @mark.asyncio
-async def test_client_returns_a_token_when_cached_token_is_valid(client_with_token):
+async def test_async_client_returns_a_token_when_cached_token_is_valid(
+    client_with_token,
+):
     assert await client_with_token.token() == "42"
 
 
 @mark.asyncio
-async def test_client_access_the_api_to_generate_token(token_client_and_post_mock):
+async def test_async_client_access_the_api_to_generate_token(
+    token_client_and_post_mock,
+):
     client, mock = token_client_and_post_mock
     await client.token()  # tries to access the API to get the token
     mock.assert_called_once_with(
@@ -49,7 +53,9 @@ async def test_client_access_the_api_to_generate_token(token_client_and_post_moc
 
 
 @mark.asyncio
-async def test_client_raises_an_error_with_wrong_credentials(client_and_post_mock):
+async def test_async_client_raises_an_error_with_wrong_credentials(
+    client_and_post_mock,
+):
     client, mock = client_and_post_mock
     client.cached_token = None
     mock.return_value.status_code = 401
@@ -58,7 +64,9 @@ async def test_client_raises_an_error_with_wrong_credentials(client_and_post_moc
 
 
 @mark.asyncio
-async def test_client_requests_gets_new_token_from_api(token_client_and_post_mock):
+async def test_async_client_requests_gets_new_token_from_api(
+    token_client_and_post_mock,
+):
     client, mock = token_client_and_post_mock
     mock.return_value.status_code = 201
     assert await client.token() == "fourty-two"
@@ -66,7 +74,9 @@ async def test_client_requests_gets_new_token_from_api(token_client_and_post_moc
 
 
 @mark.asyncio
-async def test_client_propagates_error_when_fails_to_get_token(client_and_post_mock):
+async def test_async_client_propagates_error_when_fails_to_get_token(
+    client_and_post_mock,
+):
     client, mock = client_and_post_mock
     mock.side_effect = Exception("Boom!")
     with raises(Exception) as error:
@@ -75,7 +85,7 @@ async def test_client_propagates_error_when_fails_to_get_token(client_and_post_m
 
 
 @mark.asyncio
-async def test_client_goes_back_to_the_api_when_token_is_expired(
+async def test_async_client_goes_back_to_the_api_when_token_is_expired(
     token_client_and_post_mock,
 ):
     client, mock = token_client_and_post_mock
@@ -88,14 +98,16 @@ async def test_client_goes_back_to_the_api_when_token_is_expired(
 
 
 @mark.asyncio
-async def test_client_inserts_auth_header_on_http_get(client_and_get_mock):
+async def test_async_client_inserts_auth_header_on_http_get(client_and_get_mock):
     client, mock = client_and_get_mock
     await client.get("my-url")
     mock.assert_called_once_with("my-url", headers={"Authorization": "Bearer 42"})
 
 
 @mark.asyncio
-async def test_client_inserts_auth_on_http_get_without_overwriting(client_and_get_mock):
+async def test_async_client_inserts_auth_on_http_get_without_overwriting(
+    client_and_get_mock,
+):
     client, mock = client_and_get_mock
     await client.get("my-url", headers={"answer": "fourty-two"})
     mock.assert_called_once_with(
@@ -104,7 +116,7 @@ async def test_client_inserts_auth_on_http_get_without_overwriting(client_and_ge
 
 
 @mark.asyncio
-async def test_client_raises_error_for_too_many_requests(client_and_get_mock):
+async def test_async_client_raises_error_for_too_many_requests(client_and_get_mock):
     client, mock = client_and_get_mock
     mock.return_value.status_code = 429
     mock.return_value.headers = {"Retry-After": "42"}
@@ -113,7 +125,7 @@ async def test_client_raises_error_for_too_many_requests(client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_states(state_client_and_get_mock):
+async def test_async_client_load_states(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
     states, metadata = await client.states()
     mock.assert_called_once_with(
@@ -131,7 +143,7 @@ async def test_client_load_states(state_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_states_as_df(state_client_and_get_mock):
+async def test_async_client_load_states_as_df(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
     states, _ = await client.states(format="df")
     mock.assert_called_once_with(
@@ -143,14 +155,14 @@ async def test_client_load_states_as_df(state_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_states_raises_format_error(state_client_and_get_mock):
+async def test_async_client_load_states_raises_format_error(state_client_and_get_mock):
     client, _ = state_client_and_get_mock
     with raises(UnknownFormatError):
         await client.states(format="parquet")
 
 
 @mark.asyncio
-async def test_client_load_cities(city_client_and_get_mock):
+async def test_async_client_load_cities(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
     cities, metadata = await client.cities()
     mock.assert_called_once_with(
@@ -168,7 +180,7 @@ async def test_client_load_cities(city_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_cities_as_dictionary(city_client_and_get_mock):
+async def test_async_client_load_cities_as_dictionary(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
     cities, metadata = await client.cities(format="dict")
     mock.assert_called_once_with(
@@ -181,7 +193,7 @@ async def test_client_load_cities_as_dictionary(city_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_cities_with_city_id(city_client_and_get_mock):
+async def test_async_client_load_cities_with_city_id(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
     await client.cities(city_id="21")
     mock.assert_called_once_with(
@@ -191,7 +203,7 @@ async def test_client_load_cities_with_city_id(city_client_and_get_mock):
 
 
 @mark.asyncio
-async def testclientes_with_city_name(city_client_and_get_mock):
+async def test_async_client_with_city_name(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
     await client.cities(city_name="Rio de Janeiro")
     mock.assert_called_once_with(
@@ -201,7 +213,7 @@ async def testclientes_with_city_name(city_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_cities_with_state_id(city_client_and_get_mock):
+async def test_async_client_load_cities_with_state_id(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
     await client.cities(state_id="42")
     mock.assert_called_once_with(
@@ -211,7 +223,9 @@ async def test_client_load_cities_with_state_id(city_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_client_load_cities_with_more_than_one_params(city_client_and_get_mock):
+async def test_async_client_load_cities_with_more_than_one_params(
+    city_client_and_get_mock,
+):
     client, mock = city_client_and_get_mock
     await client.cities(state_id="42", city_name="Rio de Janeiro")
     mock.assert_called_once_with(
@@ -221,10 +235,21 @@ async def test_client_load_cities_with_more_than_one_params(city_client_and_get_
 
 
 @mark.asyncio
-async def test_client_occurrences(occurrences_client_and_get_mock):
+async def test_async_client_occurrences(occurrences_client_and_get_mock):
     client, mock = occurrences_client_and_get_mock
     await client.occurrences(42)
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&page=1",
         headers={"Authorization": "Bearer 42"},
     )
+
+
+def test_client_load_states(state_client_and_get_mock):
+    client, mock = state_client_and_get_mock
+    states = client.states()
+    mock.assert_called_once_with(
+        "http://127.0.0.1/api/v2/states",
+        headers={"Authorization": "Bearer 42"},
+    )
+    assert len(states) == 1
+    assert states[0]["name"] == "Rio de Janeiro"

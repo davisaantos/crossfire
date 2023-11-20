@@ -1,3 +1,4 @@
+from asyncio import get_event_loop
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
@@ -113,3 +114,13 @@ class AsyncClient:
             format=format,
         )
         return await occurrences()
+
+
+class Client:
+    def __init__(self, AsyncClient):
+        self.client = AsyncClient()
+
+    def states(self, format=None):
+        loop = get_event_loop()
+        states, _ = loop.run_until_complete(self.client.states(format=format))
+        return states

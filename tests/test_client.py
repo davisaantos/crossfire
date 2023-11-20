@@ -244,9 +244,10 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
     )
 
 
-def test_client_load_states(state_client_and_get_mock):
+@mark.asyncio
+async def test_client_load_states(state_client_and_get_mock):
     client, mock = state_client_and_get_mock
-    states = client.states()
+    states, _ = await client.states()
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/states",
         headers={"Authorization": "Bearer 42"},

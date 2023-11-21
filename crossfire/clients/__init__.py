@@ -116,11 +116,14 @@ class AsyncClient:
         return await occurrences()
 
 
-class Client:
-    def __init__(self, AsyncClient):
-        self.client = AsyncClient()
+class Client(AsyncClient):
+    def __init__(self, email=None, password=None):
+        super().__init__(email=email, password=password)
+
+    async def _states(self, format=None):
+        return await super().states(format=format)
 
     def states(self, format=None):
         loop = get_event_loop()
-        states, _ = loop.run_until_complete(self.client.states(format=format))
+        states, _ = loop.run_until_complete(self._states(format=format))
         return states

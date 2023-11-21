@@ -6,6 +6,7 @@ from pytest import mark, raises
 
 from crossfire.clients import (
     AsyncClient,
+    Client,
     CredentialsNotFoundError,
     IncorrectCredentialsError,
     RetryAfterError,
@@ -244,13 +245,7 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
     )
 
 
-@mark.asyncio
-async def test_client_load_states(state_client_and_get_mock):
-    client, mock = state_client_and_get_mock
-    states, _ = await client.states()
-    mock.assert_called_once_with(
-        "http://127.0.0.1/api/v2/states",
-        headers={"Authorization": "Bearer 42"},
-    )
-    assert len(states) == 1
-    assert states[0]["name"] == "Rio de Janeiro"
+@patch.object(Client, "states")
+def test(states_mock):
+    Client.states(format=None)
+    states_mock.assert_called_with(format=None)

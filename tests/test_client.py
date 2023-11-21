@@ -246,6 +246,6 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
 
 
 @patch.object(Client, "states")
-def test(states_mock):
+def test_client_load_states(states_mock):
     Client.states(format=None)
     states_mock.assert_called_with(format=None)

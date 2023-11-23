@@ -117,7 +117,7 @@ class AsyncClient:
 
 
 class Client(AsyncClient):
-    def __init__(self, email=None, password=None):
+    def __init__(self, email=None, password=None, max_parallel_requests=None):
         super().__init__(email=email, password=password)
 
     async def _states(self, format=None):

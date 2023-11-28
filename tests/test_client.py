@@ -245,11 +245,11 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
     )
 
 
+@patch("crossfire.clients.config")
 @patch.object(AsyncClient, "states")
-def test_client_load_states(async_states_mock):
+def test_client_load_states(async_states_mock, config_mock):
+    config_mock.side_effect = ("email", "password")
     client = Client()
-    client.email = "email"
-    client.password = "password"
     client.cached_token = Token("42", 3600)
     client.URL = "http://127.0.0.1/api/v2"
     client.states(format=None)

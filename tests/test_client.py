@@ -249,6 +249,7 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
 @patch.object(AsyncClient, "states")
 def test_client_load_states(async_states_mock, config_mock):
     config_mock.side_effect = ("email", "password")
+    async_states_mock.return_value = ("forty-two", 42)
     client = Client()
     client.cached_token = Token("42", 3600)
     client.URL = "http://127.0.0.1/api/v2"

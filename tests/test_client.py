@@ -261,7 +261,9 @@ def test_client_load_cities():
             config_mock.side_effect = ("email", "password")
             async_cities_mock.return_value = ("forty-two", 42)
             client = Client()
-            client.cities()
+            client.cities(
+                city_id=42, city_name="Forty-two", state_id=42, format="Forty-Two"
+            )
             async_cities_mock.assert_called_with(
-                city_id=None, city_name=None, state_id=None, format=None
+                city_id=42, city_name="Forty-two", state_id=42, format="Forty-Two"
             )

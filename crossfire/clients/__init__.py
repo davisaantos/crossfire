@@ -135,3 +135,23 @@ class Client(AsyncClient):
             )
         )
         return cities
+
+    def occurrences(
+        self,
+        id_state,
+        id_cities=None,
+        type_occurrence="all",
+        max_parallel_requests=None,
+        format=None,
+    ):
+        loop = get_event_loop()
+        occurrences = loop.run_until_complete(
+            super().occurrences(
+                id_state=id_state,
+                id_cities=id_cities,
+                type_occurrence=type_occurrence,
+                max_parallel_requests=max_parallel_requests,
+                format=format,
+            )
+        )
+        return occurrences

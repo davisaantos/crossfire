@@ -253,3 +253,15 @@ def test_client_load_states():
             client = Client()
             client.states(format=None)
             async_states_mock.assert_called_with(format=None)
+
+
+def test_client_load_cities():
+    with patch("crossfire.clients.config") as config_mock:
+        with patch.object(AsyncClient, "cities") as async_cities_mock:
+            config_mock.side_effect = ("email", "password")
+            async_cities_mock.return_value = ("forty-two", 42)
+            client = Client()
+            client.cities()
+            async_cities_mock.assert_called_with(
+                city_id=None, city_name=None, state_id=None, format=None
+            )

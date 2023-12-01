@@ -129,3 +129,17 @@ class Client(AsyncClient):
         loop = get_event_loop()
         states, _ = loop.run_until_complete(self._states(format=format))
         return states
+
+    async def _cities(self, city_id=None, city_name=None, state_id=None, format=None):
+        return await super().cities(
+            city_id=city_id, city_name=city_name, state_id=state_id, format=format
+        )
+
+    def cities(self, city_id=None, city_name=None, state_id=None, format=None):
+        loop = get_event_loop()
+        cities, _ = loop.run_until_complete(
+            self._cities(
+                city_id=city_id, city_name=city_name, state_id=state_id, format=format
+            )
+        )
+        return cities

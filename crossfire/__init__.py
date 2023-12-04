@@ -1,9 +1,9 @@
 __version__ = "0.1.0"
-__all__ = ("cities", "ocurrences", "states")
+__all__ = ("cities", "occurrences", "states")
 
 from functools import lru_cache
 
-from crossfire.clients import Client
+from crossfire.clients import Client, AsyncClient
 
 
 @lru_cache(maxsize=1)

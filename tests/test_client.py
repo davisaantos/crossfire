@@ -273,7 +273,6 @@ def test_client_load_occurrences():
     with patch("crossfire.clients.config") as config_mock:
         with patch.object(AsyncClient, "occurrences") as async_occurrences_mock:
             config_mock.side_effect = ("email", "password")
-            async_occurrences_mock.return_value = 42
             client = Client()
             client.occurrences(
                 id_state=42,

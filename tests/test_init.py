@@ -32,7 +32,9 @@ def test_cities_with_default_args():
 
 def test_cities_with_custom_args():
     with patch("crossfire.client") as mock:
-        cities(city_id="42", city_name="Rio de Janeiro", state_id="21", format="df")
+        cities(
+            city_id="42", city_name="Rio de Janeiro", state_id="21", format="df"
+        )
         mock.return_value.cities.assert_called_once_with(
             city_id="42", city_name="Rio de Janeiro", state_id="21", format="df"
         )

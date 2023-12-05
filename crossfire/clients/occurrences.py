@@ -52,7 +52,9 @@ class Occurrences:
         if id_cities:
             self.params["idCities"] = id_cities
 
-        self.semaphore = Semaphore(max_parallel_requests or self.MAX_PARALLEL_REQUESTS)
+        self.semaphore = Semaphore(
+            max_parallel_requests or self.MAX_PARALLEL_REQUESTS
+        )
         self.total_pages = None
         self.progress_bar = None
 
@@ -91,7 +93,9 @@ class Occurrences:
         data.merge(await self.page(1))
 
         if self.total_pages > 1:
-            requests = tuple(self.page(n) for n in range(2, self.total_pages + 1))
+            requests = tuple(
+                self.page(n) for n in range(2, self.total_pages + 1)
+            )
             pages = await gather(*requests)
             data.merge(*pages)
 
@@ -99,7 +103,7 @@ class Occurrences:
 
 
 class Accumulator:
-    def __init__(self, *pages):
+    def __init__(self):
         self.data = None
         self.is_gdf = False
 

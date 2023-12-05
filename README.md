@@ -84,22 +84,22 @@ cities(format='df')
 To get shooting occurences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
 
 ```python
-from crossfire import occurences
+from crossfire import occurrences
 
 
-occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
 It is possible to get results in `DataFrae`:
 
 ```python
-occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='df')
+occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='df')
 ```
 
 Or as `GeoDataFrame`:
 
 ```python
-occurences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
+occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 ```
 
 ### Custom client
@@ -113,7 +113,7 @@ from crossfire import Client
 client = Client(email="fogo@cruza.do", password="Rio&Pernambuco") # credentials are optional, the default are the environment variables
 client.states()
 client.cities()
-client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+client.occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
 ### Uso assíncrono com `asyncio`
@@ -125,7 +125,7 @@ from crossfire import AsyncClient
 client = AsyncClient()  # credentials are optional, the default are the environment variables
 await client.states()
 await client.cities()
-await client.occurences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+await client.occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
 ## Credits

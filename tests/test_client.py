@@ -70,7 +70,7 @@ async def test_async_client_requests_gets_new_token_from_api(
 ):
     client, mock = token_client_and_post_mock
     mock.return_value.status_code = 201
-    assert await client.token() == "fourty-two"
+    assert await client.token() == "forty-two"
     assert client.cached_token.valid_until <= datetime.now() + timedelta(seconds=3600)
 
 
@@ -110,9 +110,9 @@ async def test_async_client_inserts_auth_on_http_get_without_overwriting(
     client_and_get_mock,
 ):
     client, mock = client_and_get_mock
-    await client.get("my-url", headers={"answer": "fourty-two"})
+    await client.get("my-url", headers={"answer": "forty-two"})
     mock.assert_called_once_with(
-        "my-url", headers={"Authorization": "Bearer 42", "answer": "fourty-two"}
+        "my-url", headers={"Authorization": "Bearer 42", "answer": "forty-two"}
     )
 
 
@@ -183,7 +183,7 @@ async def test_async_client_load_cities(city_client_and_get_mock):
 @mark.asyncio
 async def test_async_client_load_cities_as_dictionary(city_client_and_get_mock):
     client, mock = city_client_and_get_mock
-    cities, metadata = await client.cities(format="dict")
+    cities, _ = await client.cities(format="dict")
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/cities?",
         headers={"Authorization": "Bearer 42"},

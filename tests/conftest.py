@@ -35,7 +35,7 @@ def client():
 def token_client_and_post_mock(client):
     data = {
         "data": {
-            "accessToken": "fourty-two",
+            "accessToken": "forty-two",
             "expiresIn": 3600,
         },
     }

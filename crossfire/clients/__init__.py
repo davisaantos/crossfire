@@ -12,7 +12,7 @@ from crossfire.parser import parse_response
 
 class CredentialsNotFoundError(CrossfireError):
     def __init__(self, key):
-        message = f"There's no enviornment variable `{key}` condigured."
+        message = f"There's no environment variable `{key}` condigured."
         super().__init__(message)
 
 
@@ -43,6 +43,7 @@ class AsyncClient:
         except UndefinedValueError:
             raise CredentialsNotFoundError("FOGOCRUZADO_PASSWORD")
 
+        self.max_parallel_requests = max_parallel_requests
         self.client = httpx.AsyncClient(default_encoding="utf-8")
         self.credentials = {"email": email, "password": password}
         self.cached_token = None
@@ -110,7 +111,7 @@ class AsyncClient:
             id_state,
             id_cities=id_cities,
             type_occurrence=type_occurrence,
-            max_parallel_requests=max_parallel_requests,
+            max_parallel_requests=max_parallel_requests or self.max_parallel_requests,
             format=format,
         )
         return await occurrences()

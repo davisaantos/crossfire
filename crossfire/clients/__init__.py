@@ -117,7 +117,8 @@ class AsyncClient:
             id_state,
             id_cities=id_cities,
             type_occurrence=type_occurrence,
-            max_parallel_requests=max_parallel_requests or self.max_parallel_requests,
+            max_parallel_requests=max_parallel_requests
+            or self.max_parallel_requests,
             format=format,
         )
         return await occurrences()

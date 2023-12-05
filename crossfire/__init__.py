@@ -3,7 +3,7 @@ __all__ = ("cities", "occurrences", "states")
 
 from functools import lru_cache
 
-from crossfire.clients import Client, AsyncClient
+from crossfire.clients import AsyncClient, Client  # noqa
 
 
 @lru_cache(maxsize=1)

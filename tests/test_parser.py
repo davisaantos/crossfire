@@ -5,7 +5,11 @@ from geopandas import GeoDataFrame
 from pandas import DataFrame
 from pytest import raises
 
-from crossfire.parser import IncompatibleDataError, UnknownFormatError, parse_response
+from crossfire.parser import (
+    IncompatibleDataError,
+    UnknownFormatError,
+    parse_response,
+)
 
 DATA = [{"answer": 42}]
 GEODATA = [{"answer": 42, "latitude_ocorrencia": 4, "longitude_ocorrencia": 2}]

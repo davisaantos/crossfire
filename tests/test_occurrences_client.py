@@ -49,11 +49,15 @@ def test_occurrences_accumulator_for_geodf():
     accumulator = Accumulator()
     accumulator.merge(GeoDataFrame([{"a": 1}]))
     accumulator.merge(GeoDataFrame([{"a": 2}]), GeoDataFrame([{"a": 3}]))
-    assert_frame_equal(accumulator(), GeoDataFrame([{"a": 1}, {"a": 2}, {"a": 3}]))
+    assert_frame_equal(
+        accumulator(), GeoDataFrame([{"a": 1}, {"a": 2}, {"a": 3}])
+    )
 
 
 @mark.asyncio
-async def test_occurrences_with_mandatory_parameters(occurrences_client_and_get_mock):
+async def test_occurrences_with_mandatory_parameters(
+    occurrences_client_and_get_mock,
+):
     client, mock = occurrences_client_and_get_mock
     mock.return_value.json.side_effect = (
         dummy_response(2, False),
@@ -116,7 +120,9 @@ async def test_occurrences_with_victims(occurrences_client_and_get_mock):
 @mark.asyncio
 async def test_occurrences_without_victims(occurrences_client_and_get_mock):
     client, mock = occurrences_client_and_get_mock
-    occurrences = Occurrences(client, id_state=42, type_occurrence="withoutVictim")
+    occurrences = Occurrences(
+        client, id_state=42, type_occurrence="withoutVictim"
+    )
     await occurrences()
     mock.assert_called_once_with(
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=withoutVictim&page=1",

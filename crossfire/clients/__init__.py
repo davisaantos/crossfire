@@ -12,7 +12,7 @@ from crossfire.parser import parse_response
 
 class CredentialsNotFoundError(CrossfireError):
     def __init__(self, key):
-        message = f"There's no enviornment variable `{key}` condigured."
+        message = f"There's no environment variable `{key}` condigured."
         super().__init__(message)
 
 
@@ -51,7 +51,9 @@ class AsyncClient:
         if self.cached_token and self.cached_token.is_valid():
             return self.cached_token.value
 
-        resp = await self.client.post(f"{self.URL}/auth/login", json=self.credentials)
+        resp = await self.client.post(
+            f"{self.URL}/auth/login", json=self.credentials
+        )
 
         if resp.status_code == 401:
             data = resp.json()
@@ -92,9 +94,13 @@ class AsyncClient:
     async def states(self, format=None):
         return await self.get(f"{self.URL}/states", format=format)
 
-    async def cities(self, city_id=None, city_name=None, state_id=None, format=None):
+    async def cities(
+        self, city_id=None, city_name=None, state_id=None, format=None
+    ):
         params = {"cityId": city_id, "cityName": city_name, "stateId": state_id}
-        cleaned = urlencode({key: value for key, value in params.items() if value})
+        cleaned = urlencode(
+            {key: value for key, value in params.items() if value}
+        )
         return await self.get(f"{self.URL}/cities?{cleaned}", format=format)
 
     async def occurrences(
@@ -119,7 +125,9 @@ class AsyncClient:
 class Client(AsyncClient):
     def __init__(self, email=None, password=None, max_parallel_requests=None):
         super().__init__(
-            email=email, password=password, max_parallel_requests=max_parallel_requests
+            email=email,
+            password=password,
+            max_parallel_requests=max_parallel_requests,
         )
 
     def states(self, format=None):
@@ -131,7 +139,10 @@ class Client(AsyncClient):
         loop = get_event_loop()
         cities, _ = loop.run_until_complete(
             super().cities(
-                city_id=city_id, city_name=city_name, state_id=state_id, format=format
+                city_id=city_id,
+                city_name=city_name,
+                state_id=state_id,
+                format=format,
             )
         )
         return cities

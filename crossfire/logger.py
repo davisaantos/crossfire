@@ -31,7 +31,9 @@ class Logger:
         else:
             self.logger.setLevel(INFO)
 
-        formatter = Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter = Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
         out = StreamHandler()
         out.setLevel(DEBUG)

@@ -28,7 +28,10 @@ def test_client_does_not_initiate_with_proper_credentials():
 
 
 def test_client_initiates_with_credentials_from_kwargs():
-    credentials_kwargs = {"email": "email.kwargs", "password": "password.kwargs"}
+    credentials_kwargs = {
+        "email": "email.kwargs",
+        "password": "password.kwargs",
+    }
     client = AsyncClient(**credentials_kwargs)
     assert client.credentials["email"] == "email.kwargs"
     assert client.credentials["password"] == "password.kwargs"
@@ -71,7 +74,9 @@ async def test_async_client_requests_gets_new_token_from_api(
     client, mock = token_client_and_post_mock
     mock.return_value.status_code = 201
     assert await client.token() == "forty-two"
-    assert client.cached_token.valid_until <= datetime.now() + timedelta(seconds=3600)
+    assert client.cached_token.valid_until <= datetime.now() + timedelta(
+        seconds=3600
+    )
 
 
 @mark.asyncio
@@ -99,10 +104,14 @@ async def test_async_client_goes_back_to_the_api_when_token_is_expired(
 
 
 @mark.asyncio
-async def test_async_client_inserts_auth_header_on_http_get(client_and_get_mock):
+async def test_async_client_inserts_auth_header_on_http_get(
+    client_and_get_mock,
+):
     client, mock = client_and_get_mock
     await client.get("my-url")
-    mock.assert_called_once_with("my-url", headers={"Authorization": "Bearer 42"})
+    mock.assert_called_once_with(
+        "my-url", headers={"Authorization": "Bearer 42"}
+    )
 
 
 @mark.asyncio
@@ -117,7 +126,9 @@ async def test_async_client_inserts_auth_on_http_get_without_overwriting(
 
 
 @mark.asyncio
-async def test_async_client_raises_error_for_too_many_requests(client_and_get_mock):
+async def test_async_client_raises_error_for_too_many_requests(
+    client_and_get_mock,
+):
     client, mock = client_and_get_mock
     mock.return_value.status_code = 429
     mock.return_value.headers = {"Retry-After": "42"}
@@ -156,7 +167,9 @@ async def test_async_client_load_states_as_df(state_client_and_get_mock):
 
 
 @mark.asyncio
-async def test_async_client_load_states_raises_format_error(state_client_and_get_mock):
+async def test_async_client_load_states_raises_format_error(
+    state_client_and_get_mock,
+):
     client, _ = state_client_and_get_mock
     with raises(UnknownFormatError):
         await client.states(format="parquet")
@@ -262,10 +275,16 @@ def test_client_load_cities():
             async_cities_mock.return_value = ("forty-two", 42)
             client = Client()
             client.cities(
-                city_id=42, city_name="Forty-two", state_id=42, format="Forty-Two"
+                city_id=42,
+                city_name="Forty-two",
+                state_id=42,
+                format="Forty-Two",
             )
             async_cities_mock.assert_called_with(
-                city_id=42, city_name="Forty-two", state_id=42, format="Forty-Two"
+                city_id=42,
+                city_name="Forty-two",
+                state_id=42,
+                format="Forty-Two",
             )
 
 

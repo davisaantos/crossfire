@@ -2,8 +2,8 @@ from asyncio import get_event_loop
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
+import httpx
 from decouple import UndefinedValueError, config
-from httpx import AsyncClient
 
 from crossfire.clients.occurrences import Occurrences
 from crossfire.errors import CrossfireError, RetryAfterError
@@ -29,7 +29,7 @@ class Token:
         return datetime.now() < self.valid_until
 
 
-class Client:
+class AsyncClient:
     URL = "https://api-service.fogocruzado.org.br/api/v2"
 
     def __init__(self, email=None, password=None, max_parallel_requests=None):
@@ -43,7 +43,7 @@ class Client:
         except UndefinedValueError:
             raise CredentialsNotFoundError("FOGOCRUZADO_PASSWORD")
 
-        self.client = AsyncClient(default_encoding="utf-8")
+        self.client = httpx.AsyncClient(default_encoding="utf-8")
         self.credentials = {"email": email, "password": password}
         self.cached_token = None
 
@@ -89,29 +89,15 @@ class Client:
         response.raise_for_status()
         return parse_response(response, format=format)
 
-    async def _states(self, format=None):
+    async def states(self, format=None):
         return await self.get(f"{self.URL}/states", format=format)
 
-    def states(self, format=None):
-        loop = get_event_loop()
-        states, _ = loop.run_until_complete(self._states(format=format))
-        return states
-
-    async def _cities(self, city_id=None, city_name=None, state_id=None, format=None):
+    async def cities(self, city_id=None, city_name=None, state_id=None, format=None):
         params = {"cityId": city_id, "cityName": city_name, "stateId": state_id}
         cleaned = urlencode({key: value for key, value in params.items() if value})
         return await self.get(f"{self.URL}/cities?{cleaned}", format=format)
 
-    def cities(self, city_id=None, city_name=None, state_id=None, format=None):
-        loop = get_event_loop()
-        cities, _ = loop.run_until_complete(
-            self._cities(
-                city_id=city_id, city_name=city_name, state_id=state_id, format=format
-            )
-        )
-        return cities
-
-    def occurrences(
+    async def occurrences(
         self,
         id_state,
         id_cities=None,
@@ -127,5 +113,45 @@ class Client:
             max_parallel_requests=max_parallel_requests,
             format=format,
         )
+        return await occurrences()
+
+
+class Client(AsyncClient):
+    def __init__(self, email=None, password=None, max_parallel_requests=None):
+        super().__init__(
+            email=email, password=password, max_parallel_requests=max_parallel_requests
+        )
+
+    def states(self, format=None):
         loop = get_event_loop()
-        return loop.run_until_complete(occurrences())
+        states, _ = loop.run_until_complete(super().states(format=format))
+        return states
+
+    def cities(self, city_id=None, city_name=None, state_id=None, format=None):
+        loop = get_event_loop()
+        cities, _ = loop.run_until_complete(
+            super().cities(
+                city_id=city_id, city_name=city_name, state_id=state_id, format=format
+            )
+        )
+        return cities
+
+    def occurrences(
+        self,
+        id_state,
+        id_cities=None,
+        type_occurrence="all",
+        max_parallel_requests=None,
+        format=None,
+    ):
+        loop = get_event_loop()
+        occurrences = loop.run_until_complete(
+            super().occurrences(
+                id_state=id_state,
+                id_cities=id_cities,
+                type_occurrence=type_occurrence,
+                max_parallel_requests=max_parallel_requests,
+                format=format,
+            )
+        )
+        return occurrences

@@ -124,6 +124,6 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
     )
 
 
-def test_occurrence_raises_error_for_unkown_occurrence_type():
+def test_occurrence_raises_error_for_unknown_occurrence_type():
     with raises(UnknownTypeOccurrenceError):
         Occurrences(None, id_state="42", type_occurrence="42")

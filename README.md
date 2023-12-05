@@ -4,7 +4,7 @@
 # `crossfire` Python client
 </div>
 
-`crossfire` is a package created to give easier access to [Fogo Cruzado](https://fogocruzado.org.br/)'s datasets, which is a digital collaborative platform of gun shooting occurences in the metropolitan areas of Rio de Janeiro and Recife.
+`crossfire` is a package created to give easier access to [Fogo Cruzado](https://fogocruzado.org.br/)'s datasets, which is a digital collaborative platform of gun shooting occurrences in the metropolitan areas of Rio de Janeiro and Recife.
 
 The package facilitates data extraction from [Fogo Cruzado's open API](https://api.fogocruzado.org.br/).
 
@@ -41,7 +41,7 @@ FOGOCRUZADO_EMAIL=your@mail.com
 FOGOCRUZADO_PASSWORD=YOUR_PASSWORD
 ```
 
-If you prefer _not_ to use these environment variables, you can still use the credetials [when instantiating a client](#custom-client).
+If you prefer _not_ to use these environment variables, you can still use the credentials [when instantiating a client](#custom-client).
 
 ## Usage
 
@@ -79,9 +79,9 @@ It is possible to get results in `DataFrae`:
 cities(format='df')
 ```
 
-### Listing occurences
+### Listing occurrences
 
-To get shooting occurences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
+To get shooting occurrences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
 
 ```python
 from crossfire import occurrences

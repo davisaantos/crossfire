@@ -109,6 +109,8 @@ class AsyncClient:
         id_state,
         id_cities=None,
         type_occurrence="all",
+        initial_date=None,
+        final_date=None,
         max_parallel_requests=None,
         format=None,
     ):
@@ -117,6 +119,8 @@ class AsyncClient:
             id_state,
             id_cities=id_cities,
             type_occurrence=type_occurrence,
+            initial_date=initial_date,
+            final_date=final_date,
             max_parallel_requests=max_parallel_requests
             or self.max_parallel_requests,
             format=format,
@@ -155,6 +159,7 @@ class Client(AsyncClient):
         id_cities=None,
         type_occurrence="all",
         initial_date=None,
+        final_date=None,
         max_parallel_requests=None,
         format=None,
     ):
@@ -165,6 +170,7 @@ class Client(AsyncClient):
                 id_cities=id_cities,
                 type_occurrence=type_occurrence,
                 initial_date=initial_date,
+                final_date=final_date,
                 max_parallel_requests=max_parallel_requests,
                 format=format,
             )

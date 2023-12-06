@@ -144,3 +144,14 @@ async def test_occurrences_with_initial_date(occurrences_client_and_get_mock):
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&initialdate=2023-01-01&page=1",
         headers={"Authorization": "Bearer 42"},
     )
+
+
+@mark.asyncio
+async def test_occurrences_with_final_date(occurrences_client_and_get_mock):
+    client, mock = occurrences_client_and_get_mock
+    occurrences = Occurrences(client, id_state=42, final_date="2023-01-01")
+    await occurrences()
+    mock.assert_called_once_with(
+        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&finaldate=2023-01-01&page=1",
+        headers={"Authorization": "Bearer 42"},
+    )

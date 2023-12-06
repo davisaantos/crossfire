@@ -297,6 +297,8 @@ def test_client_load_occurrences():
                 id_state=42,
                 id_cities=42,
                 type_occurrence="all",
+                initial_date=None,
+                final_date=None,
                 max_parallel_requests=None,
                 format=None,
             )
@@ -305,6 +307,7 @@ def test_client_load_occurrences():
                 id_cities=42,
                 type_occurrence="all",
                 initial_date=None,
+                final_date=None,
                 max_parallel_requests=None,
                 format=None,
             )

@@ -154,6 +154,7 @@ class Client(AsyncClient):
         id_state,
         id_cities=None,
         type_occurrence="all",
+        initial_date=None,
         max_parallel_requests=None,
         format=None,
     ):
@@ -163,6 +164,7 @@ class Client(AsyncClient):
                 id_state=id_state,
                 id_cities=id_cities,
                 type_occurrence=type_occurrence,
+                initial_date=initial_date,
                 max_parallel_requests=max_parallel_requests,
                 format=format,
             )

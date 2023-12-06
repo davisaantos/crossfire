@@ -40,6 +40,7 @@ class Occurrences:
         id_state,
         id_cities=None,
         type_occurrence="all",
+        initial_date=None,
         max_parallel_requests=None,
         format=None,
     ):
@@ -51,6 +52,8 @@ class Occurrences:
         self.params = {"idState": id_state, "typeOccurrence": type_occurrence}
         if id_cities:
             self.params["idCities"] = id_cities
+        if initial_date:
+            self.params["initialdate"] = initial_date
 
         self.semaphore = Semaphore(
             max_parallel_requests or self.MAX_PARALLEL_REQUESTS

@@ -133,3 +133,14 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
 def test_occurrence_raises_error_for_unknown_occurrence_type():
     with raises(UnknownTypeOccurrenceError):
         Occurrences(None, id_state="42", type_occurrence="42")
+
+
+@mark.asyncio
+async def test_occurrences_with_initial_date(occurrences_client_and_get_mock):
+    client, mock = occurrences_client_and_get_mock
+    occurrences = Occurrences(client, id_state=42, initial_date="2023-01-01")
+    await occurrences()
+    mock.assert_called_once_with(
+        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&initialdate=2023-01-01&page=1",
+        headers={"Authorization": "Bearer 42"},
+    )

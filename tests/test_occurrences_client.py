@@ -8,6 +8,7 @@ from crossfire.clients.occurrences import (
     Occurrences,
     UnknownTypeOccurrenceError,
 )
+from crossfire.errors import DateError
 
 
 def dummy_response(total_pages, last_page):
@@ -155,3 +156,28 @@ async def test_occurrences_with_final_date(occurrences_client_and_get_mock):
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&finaldate=2023-01-01&page=1",
         headers={"Authorization": "Bearer 42"},
     )
+
+
+@mark.asyncio
+async def test_occurrences_with_different_dates_format(
+    occurrences_client_and_get_mock,
+):
+    client, mock = occurrences_client_and_get_mock
+    occurrences = Occurrences(
+        client, id_state=42, initial_date="2023/01/01", final_date="202333"
+    )
+    await occurrences()
+    mock.assert_called_once_with(
+        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&initialdate=2023-01-01&finaldate=2023-03-03&page=1",
+        headers={"Authorization": "Bearer 42"},
+    )
+
+
+def test_occurrences_raises_an_error_with_wrong_initial_and_end_date():
+    with raises(DateError):
+        Occurrences(
+            None,
+            id_state=42,
+            initial_date="2023-12-31",
+            final_date="2023-01-01",
+        )

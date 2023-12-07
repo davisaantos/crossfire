@@ -1,4 +1,6 @@
+import re
 from asyncio import Semaphore, gather, sleep
+from datetime import datetime
 from urllib.parse import urlencode
 
 from httpx import ReadTimeout
@@ -14,12 +16,13 @@ try:
 except ImportError:
     pass
 
-from crossfire.errors import CrossfireError, RetryAfterError
+from crossfire.errors import CrossfireError, DateError, RetryAfterError
 from crossfire.logger import Logger
 
 logger = Logger(__name__)
 
 TYPE_OCCURRENCES = {"all", "withVictim", "withoutVictim"}
+NUMERIC_VALUES = "[^0-9]"
 
 
 class UnknownTypeOccurrenceError(CrossfireError):
@@ -54,9 +57,15 @@ class Occurrences:
         if id_cities:
             self.params["idCities"] = id_cities
         if initial_date:
+            initial_date = re.sub(NUMERIC_VALUES, "", initial_date)
+            initial_date = datetime.strptime(initial_date, "%Y%m%d").date()
             self.params["initialdate"] = initial_date
         if final_date:
+            final_date = re.sub(NUMERIC_VALUES, "", final_date)
+            final_date = datetime.strptime(final_date, "%Y%m%d").date()
             self.params["finaldate"] = final_date
+        if (initial_date and final_date) and (initial_date > final_date):
+            raise DateError(initial_date, final_date)
 
         self.semaphore = Semaphore(
             max_parallel_requests or self.MAX_PARALLEL_REQUESTS

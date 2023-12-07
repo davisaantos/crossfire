@@ -10,3 +10,12 @@ class RetryAfterError(CrossfireError):
             f"Retry after {self.retry_after} seconds"
         )
         super().__init__(message)
+
+
+class DateError(CrossfireError):
+    def __init__(self, initial_date, final_date):
+        message = (
+            f"initial_date `{initial_date}` is greater than final_date "
+            f"`{final_date}`"
+        )
+        super().__init__(message)

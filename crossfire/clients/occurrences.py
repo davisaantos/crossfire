@@ -77,7 +77,7 @@ class Occurrences:
                 f"Too many requests. Waiting {wait}s before retrying page {number}"
             )
             await sleep(wait)
-            return await self.page(url)
+            return await self.page(number)
 
         if not self.total_pages:
             self.total_pages = metadata.page_count

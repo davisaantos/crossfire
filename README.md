@@ -79,6 +79,13 @@ It is possible to get results in `DataFrae`:
 cities(format='df')
 ```
 
+#### `Cities` parameters
+
+* `city_id`: optional, the city id;
+* `city_name`: optional, the city name;
+* `state_id`: optional, the state id;
+* `format`: optional, the format of the result, `"dict"` for dictionary, `"df"` for `DataFrame` or `"geodf"` for `GeoDataFrame`;
+
 ### Listing occurrences
 
 To get shooting occurrences from Fogo Cruzado dataset it is necessary to specify a state id in `id_state` parameter:
@@ -101,6 +108,16 @@ Or as `GeoDataFrame`:
 ```python
 occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 ```
+
+#### `Occurrences` parameters
+
+* `id_state`: required, the state id;
+* `id_cities`: optional, the city id or a list of city ids;
+* `type_occurrence`: optional, the type of occurrence. Possible values are `"all"`, `"withVictim"`, `"withoutVictim"`; 
+* `initial_date`: optional, the initial date of the occurrences. The date format are `YYYY-MM-DD`, `YYYY/MM/DD` and `YYYYMMDD`;
+* `final_date`: optional, the final date of the occurrences. The date format are `YYYY-MM-DD`, `YYYY/MM/DD` and `YYYYMMDD`;
+* `max_parallel_requests`: optional, the maximum number of parallel requests to the API; Default: 16;
+* `format`: optional, the format of the result, `"dict"` for dictionary, `"df"` for `DataFrame` or `"geodf"` for `GeoDataFrame`;
 
 ### Custom client
 

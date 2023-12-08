@@ -75,7 +75,7 @@ class Occurrences:
         if final_date:
             final_date = date_formatter(final_date)
             self.params["finaldate"] = final_date
-        if (initial_date and final_date) and (initial_date > final_date):
+        if initial_date and final_date and initial_date > final_date:
             raise InitialDateBiggerThanFinalDateError(initial_date, final_date)
 
         self.semaphore = Semaphore(

@@ -12,7 +12,7 @@ class RetryAfterError(CrossfireError):
         super().__init__(message)
 
 
-class DateError(CrossfireError):
+class InitialDateBiggerThanFinalDateError(CrossfireError):
     def __init__(self, initial_date, final_date):
         message = (
             f"initial_date `{initial_date}` is greater than final_date "

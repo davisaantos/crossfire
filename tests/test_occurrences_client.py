@@ -8,7 +8,7 @@ from crossfire.clients.occurrences import (
     Occurrences,
     UnknownTypeOccurrenceError,
 )
-from crossfire.errors import DateError
+from crossfire.errors import InitialDateBiggerThanFinalDateError
 
 
 def dummy_response(total_pages, last_page):
@@ -174,7 +174,7 @@ async def test_occurrences_with_different_dates_format(
 
 
 def test_occurrences_raises_an_error_with_wrong_initial_and_end_date():
-    with raises(DateError):
+    with raises(InitialDateBiggerThanFinalDateError):
         Occurrences(
             None,
             id_state=42,

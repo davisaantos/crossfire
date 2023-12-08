@@ -1,3 +1,5 @@
+import datetime
+
 from geopandas import GeoDataFrame
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
@@ -7,6 +9,7 @@ from crossfire.clients.occurrences import (
     Accumulator,
     Occurrences,
     UnknownTypeOccurrenceError,
+    date_formatter,
 )
 from crossfire.errors import InvalidDateIntervalError
 
@@ -181,3 +184,14 @@ def test_occurrences_raises_an_error_with_wrong_initial_and_end_date():
             initial_date="2023-12-31",
             final_date="2023-01-01",
         )
+
+
+def test_date_formatter_with_wrong_date_format():
+    with raises(ValueError):
+        date_formatter("1/1/23")
+
+
+def test_date_formatter_with_correct_date_format():
+    formated_date = date_formatter("2023/01/23")
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"

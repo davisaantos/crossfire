@@ -18,6 +18,7 @@ except ImportError:
 
 from crossfire.errors import (
     CrossfireError,
+    InvalidDateFormatError,
     InvalidDateIntervalError,
     RetryAfterError,
 )
@@ -34,7 +35,7 @@ def date_formatter(date):
     try:
         date_cleaned = datetime.strptime(date_cleaned, "%Y%m%d").date()
     except ValueError:
-        raise ValueError(f"Date `{date}` does not match format YYYYMMDD")
+        raise InvalidDateFormatError(date)
     return date_cleaned
 
 

@@ -187,7 +187,7 @@ def test_occurrences_raises_an_error_with_wrong_initial_and_end_date():
 
 
 def test_date_formatter_with_wrong_date_format():
-    with raises(ValueError):
+    with raises(InvalidDateIntervalError):
         date_formatter("1/1/23")
 
 

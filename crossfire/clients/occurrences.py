@@ -29,6 +29,15 @@ TYPE_OCCURRENCES = {"all", "withVictim", "withoutVictim"}
 NOT_NUMBER = re.compile("\D")
 
 
+def date_formatter(date):
+    date_cleaned = re.sub(NOT_NUMBER, "", date)
+    try:
+        date_cleaned = datetime.strptime(date_cleaned, "%Y%m%d").date()
+    except ValueError:
+        raise ValueError(f"Date `{date}` does not match format YYYYMMDD")
+    return date_cleaned
+
+
 class UnknownTypeOccurrenceError(CrossfireError):
     def __init__(self, type_occurrence):
         message = (
@@ -61,12 +70,10 @@ class Occurrences:
         if id_cities:
             self.params["idCities"] = id_cities
         if initial_date:
-            initial_date = re.sub(NOT_NUMBER, "", initial_date)
-            initial_date = datetime.strptime(initial_date, "%Y%m%d").date()
+            initial_date = date_formatter(initial_date)
             self.params["initialdate"] = initial_date
         if final_date:
-            final_date = re.sub(NOT_NUMBER, "", final_date)
-            final_date = datetime.strptime(final_date, "%Y%m%d").date()
+            final_date = date_formatter(final_date)
             self.params["finaldate"] = final_date
         if (initial_date and final_date) and (initial_date > final_date):
             raise InitialDateBiggerThanFinalDateError(initial_date, final_date)

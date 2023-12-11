@@ -213,3 +213,17 @@ def test_date_formatter_with_correct_date_format_doted():
     formated_date = date_formatter("2023.01.23")
     assert isinstance(formated_date, datetime.date)
     assert str(formated_date) == "2023-01-23"
+
+
+def test_date_formatter_with_python_date_format():
+    date = datetime.datetime(2023, 1, 23).date()
+    formated_date = date_formatter(date)
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"
+
+
+def test_date_formatter_with_python_datetime_format():
+    date = datetime.datetime(2023, 1, 23)
+    formated_date = date_formatter(date)
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"

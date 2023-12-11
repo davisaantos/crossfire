@@ -1,6 +1,6 @@
 import re
 from asyncio import Semaphore, gather, sleep
-from datetime import datetime
+from datetime import date, datetime
 from urllib.parse import urlencode
 
 from httpx import ReadTimeout
@@ -30,12 +30,16 @@ TYPE_OCCURRENCES = {"all", "withVictim", "withoutVictim"}
 NOT_NUMBER = re.compile("\D")
 
 
-def date_formatter(date):
-    date_cleaned = re.sub(NOT_NUMBER, "", date)
+def date_formatter(date_parameter):
+    if isinstance(date_parameter, datetime):
+        return date_parameter.date()
+    elif isinstance(date_parameter, date):
+        return date_parameter
+    date_cleaned = re.sub(NOT_NUMBER, "", date_parameter)
     try:
         date_cleaned = datetime.strptime(date_cleaned, "%Y%m%d").date()
     except ValueError:
-        raise DateFormatError(date)
+        raise DateFormatError(date_parameter)
     return date_cleaned
 
 

@@ -191,7 +191,25 @@ def test_date_formatter_with_wrong_date_format():
         date_formatter("1/1/23")
 
 
-def test_date_formatter_with_correct_date_format():
+def test_date_formatter_with_correct_date_format_slashed():
     formated_date = date_formatter("2023/01/23")
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"
+
+
+def test_date_formatter_with_correct_date_format_underscored():
+    formated_date = date_formatter("2023-01-23")
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"
+
+
+def test_date_formatter_with_correct_date_format_no_signs():
+    formated_date = date_formatter("20230123")
+    assert isinstance(formated_date, datetime.date)
+    assert str(formated_date) == "2023-01-23"
+
+
+def test_date_formatter_with_correct_date_format_doted():
+    formated_date = date_formatter("2023.01.23")
     assert isinstance(formated_date, datetime.date)
     assert str(formated_date) == "2023-01-23"

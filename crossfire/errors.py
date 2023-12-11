@@ -21,7 +21,7 @@ class InvalidDateIntervalError(CrossfireError):
         super().__init__(message)
 
 
-class InvalidDateFormatError(CrossfireError):
+class DateFormatError(CrossfireError):
     def __init__(self, date):
         message = f"Date `{date}` does not match format YYYYMMDD, YYYY-MM-DD, or YYYY/MM/DD"
         super().__init__(message)

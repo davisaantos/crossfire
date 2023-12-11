@@ -19,7 +19,7 @@ except ImportError:
 from crossfire.errors import (
     CrossfireError,
     DateFormatError,
-    InvalidDateIntervalError,
+    DateIntervalError,
     RetryAfterError,
 )
 from crossfire.logger import Logger
@@ -77,7 +77,7 @@ class Occurrences:
             final_date = date_formatter(final_date)
             self.params["finaldate"] = final_date
         if initial_date and final_date and initial_date > final_date:
-            raise InvalidDateIntervalError(initial_date, final_date)
+            raise DateIntervalError(initial_date, final_date)
 
         self.semaphore = Semaphore(
             max_parallel_requests or self.MAX_PARALLEL_REQUESTS

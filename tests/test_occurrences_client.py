@@ -11,7 +11,7 @@ from crossfire.clients.occurrences import (
     UnknownTypeOccurrenceError,
     date_formatter,
 )
-from crossfire.errors import DateFormatError, InvalidDateIntervalError
+from crossfire.errors import DateFormatError, DateIntervalError
 
 
 def dummy_response(total_pages, last_page):
@@ -177,7 +177,7 @@ async def test_occurrences_with_different_dates_format(
 
 
 def test_occurrences_raises_an_error_with_wrong_initial_and_end_date():
-    with raises(InvalidDateIntervalError):
+    with raises(DateIntervalError):
         Occurrences(
             None,
             id_state=42,

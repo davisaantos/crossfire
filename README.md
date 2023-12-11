@@ -81,10 +81,13 @@ cities(format='df')
 
 #### `Cities` parameters
 
-* `city_id`: optional, the city id;
-* `city_name`: optional, the city name;
-* `state_id`: optional, the state id;
-* `format`: optional, the format of the result, `"dict"` for dictionary, `"df"` for `DataFrame` or `"geodf"` for `GeoDataFrame`;
+| Name | Required | Description | Type | Default value | Example |
+|---|---|---|---|---|---|
+| `state_id` | ❌ | ID of the state | string | `None` | `'b112ffbe-17b3-4ad0-8f2a-2038745d1d14'` |
+| `city_id` | ❌ | ID of the city | string | `None` | `'88959ad9-b2f5-4a33-a8ec-ceff5a572ca5'` |
+| `city_name` | ❌ | Name of the city | string | `None` | `'Rio de Janeiro'` |
+| `format` | ❌ | Format of the result | string | `'dict'` | `'dict'`, `'df'` or `'geodf'` |
+
 
 ### Listing occurrences
 
@@ -111,13 +114,16 @@ occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 
 #### `Occurrences` parameters
 
-* `id_state`: required, the state id;
-* `id_cities`: optional, the city id or a list of city ids;
-* `type_occurrence`: optional, the type of occurrence. Possible values are `"all"`, `"withVictim"`, `"withoutVictim"`; 
-* `initial_date`: optional, the initial date of the occurrences. The date format are `YYYY-MM-DD`, `YYYY/MM/DD` and `YYYYMMDD`;
-* `final_date`: optional, the final date of the occurrences. The date format are `YYYY-MM-DD`, `YYYY/MM/DD` and `YYYYMMDD`;
-* `max_parallel_requests`: optional, the maximum number of parallel requests to the API; Default: 16;
-* `format`: optional, the format of the result, `"dict"` for dictionary, `"df"` for `DataFrame` or `"geodf"` for `GeoDataFrame`;
+| Name | Required | Description | Type | Default value | Example                                                                                                                        |
+|---|---|---|---|---|--------------------------------------------------------------------------------------------------------------------------------|
+| `id_state` | ✅ | ID of the state | string | `None` | `'b112ffbe-17b3-4ad0-8f2a-2038745d1d14'`                                                                                       |
+| `id_cities` | ❌ | ID of the city | string or list of strings | `None` | `'88959ad9-b2f5-4a33-a8ec-ceff5a572ca5'` or `['88959ad9-b2f5-4a33-a8ec-ceff5a572ca5', '9d7b569c-ec84-4908-96ab-3706ec3bfc57']` |
+| `type_occurrence` | ❌ | Type of occurrence | string | `'all'` | `'all'`, `'withVictim'` or `'withoutVictim'` |
+| `initial_date` | ❌ | Initial date of the occurrences | string | `None` | `'2020-01-01'`, `'2020/01/01'` or `'20200101'` | 
+| `final_date` | ❌ | Final date of the occurrences | string | `None` | `'2020-01-01'`, `'2020/01/01'` or `'20200101'` |
+| `max_parallel_requests` | ❌ | Maximum number of parallel requests to the API | int | `16` | `32` |
+| `format` | ❌ | Format of the result | string | `'dict'` | `'dict'`, `'df'` or `'geodf'` |
+
 
 ### Custom client
 

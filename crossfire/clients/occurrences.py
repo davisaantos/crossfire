@@ -1,4 +1,6 @@
+import re
 from asyncio import Semaphore, gather, sleep
+from datetime import date, datetime
 from urllib.parse import urlencode
 
 from httpx import ReadTimeout
@@ -14,12 +16,31 @@ try:
 except ImportError:
     pass
 
-from crossfire.errors import CrossfireError, RetryAfterError
+from crossfire.errors import (
+    CrossfireError,
+    DateFormatError,
+    DateIntervalError,
+    RetryAfterError,
+)
 from crossfire.logger import Logger
 
 logger = Logger(__name__)
 
 TYPE_OCCURRENCES = {"all", "withVictim", "withoutVictim"}
+NOT_NUMBER = re.compile("\D")
+
+
+def date_formatter(date_parameter):
+    if isinstance(date_parameter, datetime):
+        return date_parameter.date()
+    elif isinstance(date_parameter, date):
+        return date_parameter
+    date_cleaned = re.sub(NOT_NUMBER, "", date_parameter)
+    try:
+        date_cleaned = datetime.strptime(date_cleaned, "%Y%m%d").date()
+    except ValueError:
+        raise DateFormatError(date_parameter)
+    return date_cleaned
 
 
 class UnknownTypeOccurrenceError(CrossfireError):
@@ -40,6 +61,8 @@ class Occurrences:
         id_state,
         id_cities=None,
         type_occurrence="all",
+        initial_date=None,
+        final_date=None,
         max_parallel_requests=None,
         format=None,
     ):
@@ -51,6 +74,14 @@ class Occurrences:
         self.params = {"idState": id_state, "typeOccurrence": type_occurrence}
         if id_cities:
             self.params["idCities"] = id_cities
+        if initial_date:
+            initial_date = date_formatter(initial_date)
+            self.params["initialdate"] = initial_date
+        if final_date:
+            final_date = date_formatter(final_date)
+            self.params["finaldate"] = final_date
+        if initial_date and final_date and initial_date > final_date:
+            raise DateIntervalError(initial_date, final_date)
 
         self.semaphore = Semaphore(
             max_parallel_requests or self.MAX_PARALLEL_REQUESTS

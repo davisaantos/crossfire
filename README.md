@@ -119,8 +119,8 @@ occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 | `id_state` | ✅ | ID of the state | string | `None` | `'b112ffbe-17b3-4ad0-8f2a-2038745d1d14'`                                                                                       |
 | `id_cities` | ❌ | ID of the city | string or list of strings | `None` | `'88959ad9-b2f5-4a33-a8ec-ceff5a572ca5'` or `['88959ad9-b2f5-4a33-a8ec-ceff5a572ca5', '9d7b569c-ec84-4908-96ab-3706ec3bfc57']` |
 | `type_occurrence` | ❌ | Type of occurrence | string | `'all'` | `'all'`, `'withVictim'` or `'withoutVictim'`                                                                                   |
-| `initial_date` | ❌ | Initial date of the occurrences | string | `None` | `'2020-01-01'`, `'2020/01/01'`, `'20200101'`, `datetime.datetime(2023, 1, 1)` or `datetime.date(2023, 1, 1)`                   | 
-| `final_date` | ❌ | Final date of the occurrences | string | `None` | `'2020-01-01'`, `'2020/01/01'`, `'20200101'`, `datetime.datetime(2023, 1, 1)` or `datetime.date(2023, 1, 1)`                   |
+| `initial_date` | ❌ | Initial date of the occurrences | string, `date` or `datetime` | `None` | `'2020-01-01'`, `'2020/01/01'`, `'20200101'`, `datetime.datetime(2023, 1, 1)` or `datetime.date(2023, 1, 1)`                   | 
+| `final_date` | ❌ | Final date of the occurrences | string, `date` or `datetime` | `None` | `'2020-01-01'`, `'2020/01/01'`, `'20200101'`, `datetime.datetime(2023, 1, 1)` or `datetime.date(2023, 1, 1)`                   |
 | `max_parallel_requests` | ❌ | Maximum number of parallel requests to the API | int | `16` | `32`                                                                                                                           |
 | `format` | ❌ | Format of the result | string | `'dict'` | `'dict'`, `'df'` or `'geodf'`                                                                                                  |
 

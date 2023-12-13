@@ -139,7 +139,7 @@ client.cities()
 client.occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef')
 ```
 
-### Uso assíncrono com `asyncio`
+### Asynchronous use with `asyncio`
 
 ```python
 from crossfire import AsyncClient

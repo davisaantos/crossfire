@@ -1,10 +1,12 @@
 import datetime
+from unittest.mock import patch
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
 from pytest import mark, raises
 
+from crossfire import AsyncClient, Client
 from crossfire.clients.occurrences import (
     Accumulator,
     Occurrences,
@@ -132,6 +134,26 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=withoutVictim&page=1",
         headers={"Authorization": "Bearer 42"},
     )
+
+
+def test_client_load_occurrences():
+    with patch("crossfire.clients.config") as config_mock:
+        with patch.object(AsyncClient, "get") as async_get_mock:
+            config_mock.side_effect = ("email", "password")
+            client = Client()
+            Occurrences(
+                client,
+                id_state=42,
+                id_cities=42,
+                type_occurrence="all",
+                initial_date=None,
+                final_date=None,
+                max_parallel_requests=None,
+                format="None",
+            )
+            async_get_mock.assert_called_with(
+                format="None",
+            )
 
 
 def test_occurrence_raises_error_for_unknown_occurrence_type():

@@ -48,6 +48,8 @@ def test_occurrences_with_default_args():
             id_cities=None,
             type_occurrence="all",
             max_parallel_requests=None,
+            initial_date=None,
+            final_date=None,
             format=None,
         )
 
@@ -58,6 +60,8 @@ def test_occurrences_with_custom_args():
             "42",
             id_cities=[1, 2, 3],
             type_occurrence="without",
+            initial_date="2023-01-01",
+            final_date="2023-01-31",
             max_parallel_requests=10,
             format="df",
         )
@@ -65,6 +69,8 @@ def test_occurrences_with_custom_args():
             "42",
             id_cities=[1, 2, 3],
             type_occurrence="without",
+            initial_date="2023-01-01",
+            final_date="2023-01-31",
             max_parallel_requests=10,
             format="df",
         )

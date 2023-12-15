@@ -136,25 +136,16 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
     )
 
 
-def test_client_load_occurrences():
-    with patch("crossfire.clients.config") as config_mock:
-        with patch.object(AsyncClient, "get") as async_get_mock:
-            config_mock.side_effect = ("email", "password")
-            client = Client()
-            Occurrences(
-                client,
-                id_state=42,
-                id_cities=42,
-                type_occurrence="all",
-                initial_date=None,
-                final_date=None,
-                max_parallel_requests=None,
-                format="None",
-            )
-            async_get_mock.assert_called_with(
-                format="None",
-            )
-
+@mark.asyncio
+async def test_occurrences_with_format_parameter(occurrences_client_and_get_mock):
+    client, mock = occurrences_client_and_get_mock
+    occurrences = Occurrences(client, id_state=42, type_occurrence="withVictim")
+    await occurrences()
+    mock.assert_called_once_with(
+        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=withVictim&page=1",
+        headers={"Authorization": "Bearer 42"},
+        format="None"
+    )
 
 def test_occurrence_raises_error_for_unknown_occurrence_type():
     with raises(UnknownTypeOccurrenceError):

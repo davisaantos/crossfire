@@ -98,7 +98,9 @@ class Occurrences:
         failed = False
         async with self.semaphore:
             try:
-                occurrences, metadata = await self.client.get(url)
+                occurrences, metadata = await self.client.get(
+                    url, format=self.format
+                )
             except (ReadTimeout, RetryAfterError) as err:
                 failed = True
                 wait = getattr(err, "retry_after", 1)

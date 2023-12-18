@@ -215,38 +215,38 @@ def test_date_formatter_with_wrong_date_format():
 
 
 def test_date_formatter_with_correct_date_format_slashed():
-    formated_date = date_formatter("2023/01/23")
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter("2023/01/23")
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"
 
 
 def test_date_formatter_with_correct_date_format_underscored():
-    formated_date = date_formatter("2023-01-23")
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter("2023-01-23")
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"
 
 
 def test_date_formatter_with_correct_date_format_no_signs():
-    formated_date = date_formatter("20230123")
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter("20230123")
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"
 
 
 def test_date_formatter_with_correct_date_format_doted():
-    formated_date = date_formatter("2023.01.23")
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter("2023.01.23")
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"
 
 
 def test_date_formatter_with_python_date_format():
     date = datetime.datetime(2023, 1, 23).date()
-    formated_date = date_formatter(date)
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter(date)
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"
 
 
 def test_date_formatter_with_python_datetime_format():
     date = datetime.datetime(2023, 1, 23)
-    formated_date = date_formatter(date)
-    assert isinstance(formated_date, datetime.date)
-    assert str(formated_date) == "2023-01-23"
+    formatted_date = date_formatter(date)
+    assert isinstance(formatted_date, datetime.date)
+    assert str(formatted_date) == "2023-01-23"

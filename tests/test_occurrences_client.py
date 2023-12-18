@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame
@@ -13,6 +13,7 @@ from crossfire.clients.occurrences import (
     date_formatter,
 )
 from crossfire.errors import DateFormatError, DateIntervalError
+from crossfire.parser import Metadata
 
 
 def dummy_response(total_pages, last_page):
@@ -138,13 +139,20 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
 @mark.asyncio
 async def test_occurrences_with_format_parameter():
     client_mock = AsyncMock()
-    metadata_mock = Mock()
-    metadata_mock.json.return_value = {"pageMeta": {"pageCount": 1}}
-    client_mock.get.return_value = ("occs", metadata_mock)
+    metadata = Metadata(
+        page=1,
+        take=1,
+        item_count=1,
+        page_count=1,
+        has_previous_page=False,
+        has_next_page=False,
+    )
+    client_mock.get.return_value = ("occs", metadata)
+    client_mock.URL = "http://127.0.0.1/api/v2"
     occurrences = Occurrences(client_mock, id_state=42, format="df")
     await occurrences()
     occurrences.client.get.assert_called_once_with(
-        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=withVictim&page=1",
+        "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&page=1",
         format="df",
     )
 

@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame
@@ -135,10 +135,14 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
     )
 
 
-def test_occurrences_with_format_parameter():
-    client_mock = Mock()
+@mark.asyncio
+async def test_occurrences_with_format_parameter():
+    client_mock = AsyncMock()
+    metadata_mock = Mock()
+    metadata_mock.json.return_value = {"pageMeta": {"pageCount": 1}}
+    client_mock.get.return_value = ("occs", metadata_mock)
     occurrences = Occurrences(client_mock, id_state=42, format="df")
-    occurrences()
+    await occurrences()
     occurrences.client.get.assert_called_once_with(
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=withVictim&page=1",
         format="df",

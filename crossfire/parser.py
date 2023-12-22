@@ -36,13 +36,13 @@ class IncompatibleDataError(CrossfireError):
 
 
 def to_geo_dataframe(df):
-    if not {"latitude_ocorrencia", "longitude_ocorrencia"}.issubset(df.columns):
+    if not {"latitude", "longitude"}.issubset(df.columns):
         raise IncompatibleDataError(
-            "Missing columns `latitude_ocorrencia` and `longitude_ocorrencia`. "
+            "Missing columns `latitude` and `longitude`. "
             "They are needed to create a GeoDataFrame."
         )
 
-    geometry = points_from_xy(df.longitude_ocorrencia, df.latitude_ocorrencia)
+    geometry = points_from_xy(df.longitude, df.latitude)
     return GeoDataFrame(df, geometry=geometry, crs=CRS)
 
 

@@ -12,7 +12,7 @@ from crossfire.parser import (
 )
 
 DATA = [{"answer": 42}]
-GEODATA = [{"answer": 42, "latitude_ocorrencia": 4, "longitude_ocorrencia": 2}]
+GEODATA = [{"answer": 42, "latitude": 4, "longitude": 2}]
 
 
 class DummyError(Exception):

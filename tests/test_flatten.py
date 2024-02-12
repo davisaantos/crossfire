@@ -15,8 +15,6 @@ geometry = [Point(4, 2)]
 GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=geometry)
 
 
-# test the existence of the flatten function
-assert flatten
 
 
 def teste_flatten_wrong_nested_columns_value_error():

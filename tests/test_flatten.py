@@ -5,12 +5,13 @@ from shapely.geometry import Point
 
 from crossfire import NestedColumnError, flatten
 
-DICT_DATA = [
-    {"answer": 42, "contextInfo": {"context1": "info1", "context2": "info2"}}
-]
-PD_DATA = DataFrame(DICT_DATA)
+DICT_DATA = {
+    "answer": 42,
+    "contextInfo": {"context1": "info1", "context2": "info2"},
+}
+PD_DATA = DataFrame([DICT_DATA])
 GEOMETRY = [Point(4, 2)]
-GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
+GEOPD_DATA = GeoDataFrame([DICT_DATA], crs="EPSG:4326", geometry=GEOMETRY)
 
 
 def teste_flatten_wrong_nested_columns_value_error():
@@ -24,7 +25,6 @@ def test_flatten_dict():
         DICT_DATA, nested_columns=["contextInfo", "transports"]
     )
     assert flattened_dict == {
-        "answer": 42,
         "contextInfo_context1": "info1",
         "contextInfo_context2": "info2",
     }

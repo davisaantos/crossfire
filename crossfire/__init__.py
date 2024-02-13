@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from crossfire.clients import AsyncClient, Client  # noqa
 
-NESTED_COLUMNS = ["contextInfo"]
+NESTED_COLUMNS = {"contextInfo", "transports", "victims", "animalVictims"}
 
 
 @lru_cache(maxsize=1)
@@ -43,17 +43,18 @@ def occurrences(
     )
 
 
-def _flatten_dict(data, parent_key, sep="_"):
-    for dict in data:
-        for k, v in dict.items():
-            new_key = parent_key + sep + k if parent_key else k
-            yield new_key, v
-
-
 def flatten(data, nested_columns=None):
     if nested_columns is None:
         nested_columns = NESTED_COLUMNS
-    elif nested_columns not in (NESTED_COLUMNS):
+    nested_columns = set(nested_columns)
+    if not nested_columns.issubset(NESTED_COLUMNS):
         raise ValueError(f"Invalid `nested_columns` value: {nested_columns}")
     if isinstance(data, list):
-        return _flatten_dict(data, nested_columns)
+        for dict in data:
+            for nested_column in nested_columns:
+                if nested_column in dict:
+                    for k, v in dict.get(nested_column).items():
+                        new_key = (
+                            nested_column + "_" + k if nested_columns else k
+                        )
+                        return new_key, v

@@ -4,6 +4,7 @@ __all__ = ("AsyncClient", "Client", "cities", "occurrences", "states")
 from functools import lru_cache
 
 from crossfire.clients import AsyncClient, Client  # noqa
+from crossfire.errors import NestedColumnError
 
 NESTED_COLUMNS = {"contextInfo", "transports", "victims", "animalVictims"}
 
@@ -44,11 +45,9 @@ def occurrences(
 
 
 def flatten(data, nested_columns=None):
-    if nested_columns is None:
-        nested_columns = NESTED_COLUMNS
-    nested_columns = set(nested_columns)
+    nested_columns = set(nested_columns or NESTED_COLUMNS)
     if not nested_columns.issubset(NESTED_COLUMNS):
-        raise ValueError(f"Invalid `nested_columns` value: {nested_columns}")
+        raise NestedColumnError(nested_columns)
     if isinstance(data, list):
         keys = set(data[0].keys()) & nested_columns
         for item in data:

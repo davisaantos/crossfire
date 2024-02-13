@@ -3,18 +3,18 @@ from pandas import DataFrame
 from pytest import raises
 from shapely.geometry import Point
 
-from crossfire import flatten
+from crossfire import NestedColumnError, flatten
 
 DICT_DATA = [
     {"answer": 42, "contextInfo": {"context1": "info1", "context2": "info2"}}
 ]
 PD_DATA = DataFrame(DICT_DATA)
-geometry = [Point(4, 2)]
-GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=geometry)
+GEOMETRY = [Point(4, 2)]
+GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
 
 
 def teste_flatten_wrong_nested_columns_value_error():
-    with raises(ValueError):
+    with raises(NestedColumnError):
         flatten(DICT_DATA, nested_columns=["wrong"])
 
 

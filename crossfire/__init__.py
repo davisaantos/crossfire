@@ -50,8 +50,8 @@ def flatten(data, nested_columns=None):
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise ValueError(f"Invalid `nested_columns` value: {nested_columns}")
     if isinstance(data, list):
+        keys = set(data[0].keys()) & nested_columns
         for item in data:
-            keys = set(item.keys()) & nested_columns
             for key in keys:
                 for k, v in item.get(key).items():
                     return f"{key}_{k}", v

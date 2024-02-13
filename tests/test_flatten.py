@@ -15,7 +15,7 @@ GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=geometry)
 
 def teste_flatten_wrong_nested_columns_value_error():
     with raises(ValueError):
-        flatten(DICT_DATA, nested_columns={"wrong"})
+        flatten(DICT_DATA, nested_columns=["wrong"])
 
 
 # test the flatten function with a dictionary mocking it to assert _flatten_dict function is being called

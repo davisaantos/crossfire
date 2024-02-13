@@ -50,11 +50,11 @@ def flatten(data, nested_columns=None):
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise ValueError(f"Invalid `nested_columns` value: {nested_columns}")
     if isinstance(data, list):
-        for dict in data:
-            for nested_column in nested_columns:
-                if nested_column in dict:
-                    for k, v in dict.get(nested_column).items():
-                        new_key = (
-                            nested_column + "_" + k if nested_columns else k
-                        )
-                        return new_key, v
+        for item in data:
+            keys = set(item.keys()) & nested_columns
+            for key in keys:
+                for k, v in item.get(key).items():
+                    new_key = (
+                        key + "_" + k if nested_columns else k
+                    )
+                    return new_key, v

@@ -52,6 +52,5 @@ def flatten(data, nested_columns=None):
         keys = set(data.keys()) & nested_columns
         flattened_dict = {}
         for key in keys:
-            for k, v in data.get(key).items():
-                flattened_dict.update({f"{key}_{k}": v})
+            flattened_dict.update({f"{key}_{k}": v for  k, v in data.get(key).items()})
             return flattened_dict

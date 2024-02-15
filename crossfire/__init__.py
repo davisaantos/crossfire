@@ -50,9 +50,7 @@ def flatten(data, nested_columns=None):
         raise NestedColumnError(nested_columns)
     if isinstance(data, dict):
         keys = set(data.keys()) & nested_columns
-        flattened_dict = {}
         for key in keys:
-            flattened_dict.update(
-                {f"{key}_{k}": v for k, v in data.get(key).items()}
-            )
-            return flattened_dict
+            data.update({f"{key}_{k}": v for k, v in data.get(key).items()})
+            data.pop(key)
+            return data

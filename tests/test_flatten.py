@@ -25,6 +25,7 @@ def test_flatten_dict():
         DICT_DATA, nested_columns=["contextInfo", "transports"]
     )
     assert flattened_dict == {
+        "answer": 42,
         "contextInfo_context1": "info1",
         "contextInfo_context2": "info2",
     }

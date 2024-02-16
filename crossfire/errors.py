@@ -25,3 +25,9 @@ class DateFormatError(CrossfireError):
     def __init__(self, date):
         message = f"Date `{date}` does not match format YYYYMMDD, YYYY-MM-DD, or YYYY/MM/DD"
         super().__init__(message)
+
+
+class NestedColumnError(CrossfireError):
+    def __init__(self, nested_columns):
+        message = f"Invalid `nested_columns` value: {nested_columns}"
+        super().__init__(message)

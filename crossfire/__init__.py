@@ -6,7 +6,7 @@ from functools import lru_cache
 from crossfire.clients import AsyncClient, Client  # noqa
 from crossfire.errors import NestedColumnError
 
-NESTED_COLUMNS = {"contextInfo", "transports", "victims", "animalVictims"}
+NESTED_COLUMNS = {"contextInfo"}
 
 
 @lru_cache(maxsize=1)

@@ -22,7 +22,7 @@ def teste_flatten_with_emptylist():
 # test the flatten function with a dictionary mocking it to assert _flatten_dict function is being called
 def test_flatten_dict():
     flattened_dict = flatten(
-        DICT_DATA, nested_columns=["contextInfo", "transports"]
+        DICT_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
     assert flattened_dict == [
         {

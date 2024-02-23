@@ -6,6 +6,12 @@ from functools import lru_cache
 from crossfire.clients import AsyncClient, Client  # noqa
 from crossfire.errors import NestedColumnError
 
+try:
+    from pandas import DataFrame
+except ImportError:
+    pass
+
+
 NESTED_COLUMNS = {
     "contextInfo",
     "state",
@@ -52,15 +58,19 @@ def occurrences(
 
 
 def flatten(data, nested_columns=None):
+    origin_type = type(data)
     nested_columns = set(nested_columns or NESTED_COLUMNS)
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise NestedColumnError(nested_columns)
-    if not data:
+    if isinstance(data, DataFrame):
+        data = data.to_dict(orient="records")
+    elif not data:
         return data
-    if isinstance(data, list):
-        keys = set(data[0].keys()) & nested_columns
-        for item in data:
-            for key in keys:
-                item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
-                item.pop(key)
-        return data
+    keys = set(data[0].keys()) & nested_columns
+    for item in data:
+        for key in keys:
+            item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
+            item.pop(key)
+    if origin_type == DataFrame:
+        return DataFrame(data)
+    return data

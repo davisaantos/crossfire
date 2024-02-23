@@ -40,11 +40,11 @@ def test_flatten_dict():
 
 
 # Write a test that passes a pandas.DataFrame as data to the existing flatten function
-def test_flatten_gpd():
+def test_flatten_pd():
     flattened_pd = flatten(
         PD_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    assert flattened_pd.equal(
+    assert flattened_pd.equals(
         DataFrame(
             [
                 {

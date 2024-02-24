@@ -57,20 +57,24 @@ def occurrences(
     )
 
 
-def flatten(data, nested_columns=None):
-    origin_type = type(data)
-    nested_columns = set(nested_columns or NESTED_COLUMNS)
-    if not nested_columns.issubset(NESTED_COLUMNS):
-        raise NestedColumnError(nested_columns)
-    if isinstance(data, DataFrame):
-        data = data.to_dict(orient="records")
-    elif not data:
-        return data
-    keys = set(data[0].keys()) & nested_columns
+def _make_flatten(data, keys):
     for item in data:
         for key in keys:
             item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
             item.pop(key)
-    if origin_type == DataFrame:
-        return DataFrame(data)
+    return data
+
+
+def flatten(data, nested_columns=None):
+    nested_columns = set(nested_columns or NESTED_COLUMNS)
+    if not nested_columns.issubset(NESTED_COLUMNS):
+        raise NestedColumnError(nested_columns)
+    if isinstance(data, DataFrame) and not data.empty:
+        keys = set(data.columns) & nested_columns
+        data = data.to_dict(orient="records")
+        return DataFrame(_make_flatten(data, keys))
+    elif not data:
+        return data
+    keys = set(data[0].keys()) & nested_columns
+    data = _make_flatten(data, keys)
     return data

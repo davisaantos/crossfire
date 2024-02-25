@@ -7,7 +7,8 @@ from crossfire.clients import AsyncClient, Client  # noqa
 from crossfire.errors import NestedColumnError
 
 try:
-    from pandas import DataFrame
+    from pandas import DataFrame, Series
+    from pandas import concat as pd_concat
 except ImportError:
     pass
 
@@ -57,12 +58,11 @@ def occurrences(
     )
 
 
-def _make_flatten(data, keys):
-    for item in data:
-        for key in keys:
-            item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
-            item.pop(key)
-    return data
+def flatten_df(row, column_name):
+    column_data = row[column_name]
+    return Series(
+        {f"{column_name}_{key}": value for key, value in column_data.items()}
+    )
 
 
 def flatten(data, nested_columns=None):
@@ -71,10 +71,21 @@ def flatten(data, nested_columns=None):
         raise NestedColumnError(nested_columns)
     if isinstance(data, DataFrame) and not data.empty:
         keys = set(data.columns) & nested_columns
-        data = data.to_dict(orient="records")
-        return DataFrame(_make_flatten(data, keys))
+        for key in keys:
+            data = pd_concat(
+                [
+                    data.drop(key, axis=1),
+                    data.apply(flatten_df, args=(key,), axis=1),
+                ],
+                axis=1,
+            )
+
+        return data
     elif not data:
         return data
     keys = set(data[0].keys()) & nested_columns
-    data = _make_flatten(data, keys)
+    for item in data:
+        for key in keys:
+            item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
+            item.pop(key)
     return data

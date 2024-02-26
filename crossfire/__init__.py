@@ -8,7 +8,7 @@ from crossfire.errors import NestedColumnError
 
 try:
     from pandas import DataFrame, Series
-    from pandas import concat as pd_concat
+    from pandas import concat
 except ImportError:
     pass
 
@@ -72,7 +72,7 @@ def flatten(data, nested_columns=None):
     if isinstance(data, DataFrame) and not data.empty:
         keys = set(data.columns) & nested_columns
         for key in keys:
-            data = pd_concat(
+            data = concat(
                 [
                     data.drop(key, axis=1),
                     data.apply(flatten_df, args=(key,), axis=1),

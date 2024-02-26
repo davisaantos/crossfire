@@ -70,6 +70,9 @@ def flatten(data, nested_columns=None):
     nested_columns = set(nested_columns or NESTED_COLUMNS)
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise NestedColumnError(nested_columns)
+    if not HAS_PANDAS or (HAS_PANDAS and not isinstance(data, DataFrame)):
+        if not data:
+            return data
     if HAS_PANDAS and isinstance(data, DataFrame):
         if data.empty:
             return data
@@ -86,8 +89,6 @@ def flatten(data, nested_columns=None):
 
             return data
 
-    if not data:
-        return data
     keys = set(data[0].keys()) & nested_columns
     for item in data:
         for key in keys:

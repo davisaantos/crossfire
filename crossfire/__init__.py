@@ -7,8 +7,7 @@ from crossfire.clients import AsyncClient, Client  # noqa
 from crossfire.errors import NestedColumnError
 
 try:
-    from pandas import DataFrame, Series
-    from pandas import concat
+    from pandas import DataFrame, Series, concat
 except ImportError:
     pass
 
@@ -58,7 +57,7 @@ def occurrences(
     )
 
 
-def flatten_df(row, column_name):
+def _flatten_df(row, column_name):
     column_data = row[column_name]
     return Series(
         {f"{column_name}_{key}": value for key, value in column_data.items()}
@@ -75,7 +74,7 @@ def flatten(data, nested_columns=None):
             data = concat(
                 (
                     data.drop(key, axis=1),
-                    data.apply(flatten_df, args=(key,), axis=1),
+                    data.apply(_flatten_df, args=(key,), axis=1),
                 ),
                 axis=1,
             )

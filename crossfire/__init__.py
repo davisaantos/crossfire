@@ -73,10 +73,10 @@ def flatten(data, nested_columns=None):
         keys = set(data.columns) & nested_columns
         for key in keys:
             data = concat(
-                [
+                (
                     data.drop(key, axis=1),
                     data.apply(flatten_df, args=(key,), axis=1),
-                ],
+                ),
                 axis=1,
             )
 

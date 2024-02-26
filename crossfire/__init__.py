@@ -8,8 +8,10 @@ from crossfire.errors import NestedColumnError
 
 try:
     from pandas import DataFrame, Series, concat
+
+    HAS_PANDAS = True
 except ImportError:
-    pass
+    HAS_PANDAS = False
 
 
 NESTED_COLUMNS = {
@@ -68,19 +70,23 @@ def flatten(data, nested_columns=None):
     nested_columns = set(nested_columns or NESTED_COLUMNS)
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise NestedColumnError(nested_columns)
-    if isinstance(data, DataFrame) and not data.empty:
-        keys = set(data.columns) & nested_columns
-        for key in keys:
-            data = concat(
-                (
-                    data.drop(key, axis=1),
-                    data.apply(_flatten_df, args=(key,), axis=1),
-                ),
-                axis=1,
-            )
+    if HAS_PANDAS and isinstance(data, DataFrame):
+        if data.empty:
+            return data
+        else:
+            keys = set(data.columns) & nested_columns
+            for key in keys:
+                data = concat(
+                    (
+                        data.drop(key, axis=1),
+                        data.apply(_flatten_df, args=(key,), axis=1),
+                    ),
+                    axis=1,
+                )
 
-        return data
-    elif not data:
+            return data
+
+    if not data:
         return data
     keys = set(data[0].keys()) & nested_columns
     for item in data:

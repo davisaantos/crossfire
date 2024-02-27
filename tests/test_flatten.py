@@ -1,3 +1,6 @@
+from unittest.mock import Mock
+
+import pytest
 from geopandas import GeoDataFrame
 from pandas import DataFrame
 from pytest import raises
@@ -25,7 +28,11 @@ def teste_flatten_with_emptylist():
     assert flatten([]) == []
 
 
-# test the flatten function with a dictionary mocking it to assert _flatten_dict function is being called
+def teste_flatten_with_emptyDataFrame():
+    data = flatten(DataFrame())
+    assert data.equals(DataFrame())
+
+
 def test_flatten_dict():
     flattened_dict = flatten(
         DICT_DATA, nested_columns=["contextInfo", "neighborhood"]
@@ -39,7 +46,6 @@ def test_flatten_dict():
     ]
 
 
-# Write a test that passes a pandas.DataFrame as data to the existing flatten function
 def test_flatten_pd():
     flattened_pd = flatten(
         PD_DATA, nested_columns=["contextInfo", "neighborhood"]
@@ -55,3 +61,14 @@ def test_flatten_pd():
             ]
         )
     )
+
+
+def test_aux_function_is_called():
+    mock_flatten_df = Mock()
+
+    with pytest.MonkeyPatch().context() as m:
+        m.setattr("crossfire._flatten_df", mock_flatten_df)
+
+        flatten(PD_DATA, nested_columns=["contextInfo"])
+
+    mock_flatten_df.assert_called_once()

@@ -66,28 +66,33 @@ def _flatten_df(row, column_name):
     )
 
 
+def is_empty(data):
+    if not HAS_PANDAS or (HAS_PANDAS and not isinstance(data, DataFrame)):
+        return not data
+    elif isinstance(data, DataFrame):
+        return data.empty
+    else:
+        return False
+
+
 def flatten(data, nested_columns=None):
     nested_columns = set(nested_columns or NESTED_COLUMNS)
     if not nested_columns.issubset(NESTED_COLUMNS):
         raise NestedColumnError(nested_columns)
-    if not HAS_PANDAS or (HAS_PANDAS and not isinstance(data, DataFrame)):
-        if not data:
-            return data
+    if is_empty(data):
+        return data
     if HAS_PANDAS and isinstance(data, DataFrame):
-        if data.empty:
-            return data
-        else:
-            keys = set(data.columns) & nested_columns
-            for key in keys:
-                data = concat(
-                    (
-                        data.drop(key, axis=1),
-                        data.apply(_flatten_df, args=(key,), axis=1),
-                    ),
-                    axis=1,
-                )
+        keys = set(data.columns) & nested_columns
+        for key in keys:
+            data = concat(
+                (
+                    data.drop(key, axis=1),
+                    data.apply(_flatten_df, args=(key,), axis=1),
+                ),
+                axis=1,
+            )
 
-            return data
+        return data
 
     keys = set(data[0].keys()) & nested_columns
     for item in data:

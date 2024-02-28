@@ -67,12 +67,10 @@ def _flatten_df(row, column_name):
 
 
 def is_empty(data):
-    if not HAS_PANDAS or (HAS_PANDAS and not isinstance(data, DataFrame)):
-        return not data
-    elif isinstance(data, DataFrame):
+    if HAS_PANDAS and isinstance(data, DataFrame):
         return data.empty
     else:
-        return False
+        return not data
 
 
 def flatten(data, nested_columns=None):

@@ -71,8 +71,7 @@ def _flatten_df(row, column_name):
 def is_empty(data):
     if HAS_PANDAS and isinstance(data, DataFrame):
         return data.empty
-    else:
-        return not data
+    return not data
 
 
 def flatten(data, nested_columns=None):

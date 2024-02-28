@@ -90,10 +90,12 @@ def test_flatten_gpd():
         crs="EPSG:4326",
         geometry=GEOMETRY,
     )
-    result = result.reindex(columns=(
-        "answer",
-        "geometry",
-        "contextInfo_context1",
-        "contextInfo_context2",
-    ))
+    result = result.reindex(
+        columns=(
+            "answer",
+            "geometry",
+            "contextInfo_context1",
+            "contextInfo_context2",
+        )
+    )
     assert flattened_pd.equals(result)

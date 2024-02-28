@@ -80,7 +80,7 @@ def flatten(data, nested_columns=None):
         raise NestedColumnError(nested_columns)
     if is_empty(data):
         return data
-    if HAS_PANDAS and isinstance(data, (DataFrame, GeoDataFrame)):
+    if HAS_PANDAS and isinstance(data, DataFrame):
         keys = set(data.columns) & nested_columns
         for key in keys:
             data = concat(

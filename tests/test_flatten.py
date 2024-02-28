@@ -1,7 +1,7 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from geopandas import GeoDataFrame
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from pytest import raises
 from shapely import Point
 
@@ -28,9 +28,7 @@ def test_flatten_with_empty_list():
 
 
 def test_flatten_with_empty_data_frame():
-    mock_flatten_df = Mock()
-
-    with patch("crossfire._flatten_df", mock_flatten_df):
+    with patch("crossfire._flatten_df") as mock_flatten_df:
         flatten(DataFrame(), nested_columns=["contextInfo"])
 
     mock_flatten_df.assert_not_called()
@@ -67,12 +65,18 @@ def test_flatten_pd():
 
 
 def test_flatten_df_is_called():
-    mock_flatten_df = Mock()
-
-    with patch("crossfire._flatten_df", mock_flatten_df):
+    with patch("crossfire._flatten_df") as mock_flatten_df:
+        mock_flatten_df.return_value(
+            Series(
+                {
+                    "contextInfo_contextInfo_context1": "info1",
+                    "contextInfo_contextInfo_context2": "info2",
+                }
+            )
+        )
         flatten(PD_DATA, nested_columns=["contextInfo"])
 
-    mock_flatten_df.assert_called_once()
+        mock_flatten_df.assert_called_once()
 
 
 def test_flatten_gpd():

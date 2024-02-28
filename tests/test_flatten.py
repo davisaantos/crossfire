@@ -73,3 +73,27 @@ def test_flatten_df_is_called():
         flatten(PD_DATA, nested_columns=["contextInfo"])
 
     mock_flatten_df.assert_called_once()
+
+
+def test_flatten_gpd():
+    flattened_pd = flatten(
+        GEOPD_DATA, nested_columns=["contextInfo", "neighborhood"]
+    )
+    result = GeoDataFrame(
+        [
+            {
+                "answer": 42,
+                "contextInfo_context1": "info1",
+                "contextInfo_context2": "info2",
+            }
+        ],
+        crs="EPSG:4326",
+        geometry=GEOMETRY,
+    )
+    result = result.reindex(columns=(
+        "answer",
+        "geometry",
+        "contextInfo_context1",
+        "contextInfo_context2",
+    ))
+    assert flattened_pd.equals(result)

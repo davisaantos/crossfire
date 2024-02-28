@@ -18,16 +18,16 @@ GEOMETRY = [Point(4, 2)]
 GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
 
 
-def teste_flatten_wrong_nested_columns_value_error():
+def test_flatten_wrong_nested_columns_value_error():
     with raises(NestedColumnError):
         flatten(DICT_DATA, nested_columns=["wrong"])
 
 
-def teste_flatten_with_empty_list():
+def test_flatten_with_empty_list():
     assert flatten([]) == []
 
 
-def teste_flatten_with_empty_data_frame():
+def test_flatten_with_empty_data_frame():
     mock_flatten_df = Mock()
 
     with patch("crossfire._flatten_df", mock_flatten_df):

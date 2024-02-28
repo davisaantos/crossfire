@@ -3,8 +3,6 @@ __all__ = ("AsyncClient", "Client", "cities", "occurrences", "states")
 
 from functools import lru_cache
 
-from geopandas import GeoDataFrame
-
 from crossfire.clients import AsyncClient, Client  # noqa
 from crossfire.errors import NestedColumnError
 

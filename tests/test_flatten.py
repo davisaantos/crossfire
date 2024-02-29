@@ -75,7 +75,7 @@ def test_flatten_df_is_called():
 
         flatten(PD_DATA, nested_columns=["contextInfo"])
 
-        mock_flatten_df.assert_called_once()
+    mock_flatten_df.assert_called_once()
 
 
 def test_flatten_gpd():

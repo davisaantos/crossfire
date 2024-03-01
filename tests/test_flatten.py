@@ -68,8 +68,8 @@ def test_flatten_df_is_called():
     with patch("crossfire._flatten_df", autospec=True) as mock_flatten_df:
         mock_flatten_df.return_value = Series(
             {
-                "contextInfo_contextInfo_context1": "info1",
-                "contextInfo_contextInfo_context2": "info2",
+                "contextInfo_context1": "info1",
+                "contextInfo_context2": "info2",
             }
         )
 

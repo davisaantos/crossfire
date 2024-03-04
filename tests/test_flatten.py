@@ -5,7 +5,8 @@ from pandas import DataFrame, Series
 from pytest import raises
 from shapely import Point
 
-from crossfire import NestedColumnError, flatten
+from crossfire.clients.occurrences import flatten
+from crossfire.errors import NestedColumnError
 
 DICT_DATA = [
     {
@@ -28,7 +29,7 @@ def test_flatten_with_empty_list():
 
 
 def test_flatten_with_empty_data_frame():
-    with patch("crossfire._flatten_df") as mock_flatten_df:
+    with patch("crossfire.clients.occurrences._flatten_df") as mock_flatten_df:
         flatten(DataFrame(), nested_columns=["contextInfo"])
 
     mock_flatten_df.assert_not_called()
@@ -66,7 +67,9 @@ def test_flatten_pd():
 
 def test_flatten_df_is_called():
     # There is a bug on Pandas that makes apply fails when called from Series with the default MagicMock
-    with patch("crossfire._flatten_df", new_callable=Mock) as mock_flatten_df:
+    with patch(
+        "crossfire.clients.occurrences._flatten_df", new_callable=Mock
+    ) as mock_flatten_df:
         mock_flatten_df.return_value = Series(
             {
                 "contextInfo_context1": "info1",

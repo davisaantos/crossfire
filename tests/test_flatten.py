@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame, Series
@@ -65,7 +65,8 @@ def test_flatten_pd():
 
 
 def test_flatten_df_is_called():
-    with patch("crossfire._flatten_df", autospec=True) as mock_flatten_df:
+    # There is a bug on Pandas that makes apply fails when called from Series with the default MagicMock
+    with patch("crossfire._flatten_df", new_callable=Mock) as mock_flatten_df:
         mock_flatten_df.return_value = Series(
             {
                 "contextInfo_context1": "info1",

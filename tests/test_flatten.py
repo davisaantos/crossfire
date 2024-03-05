@@ -67,6 +67,7 @@ def test_flatten_pd():
 
 def test_flatten_df_is_called():
     # There is a bug on Pandas that makes apply fails when called from Series with the default MagicMock
+    # more info: https://github.com/pandas-dev/pandas/issues/45298
     with patch(
         "crossfire.clients.occurrences._flatten_df", new_callable=Mock
     ) as mock_flatten_df:

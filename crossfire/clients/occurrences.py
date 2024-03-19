@@ -18,8 +18,10 @@ except ImportError:
 
 try:
     from geopandas import GeoDataFrame
+
+    HAS_GEOPANDAS = True
 except ImportError:
-    pass
+    HAS_GEOPANDAS = False
 
 from crossfire.errors import (
     CrossfireError,
@@ -155,7 +157,7 @@ class Accumulator:
 
     def save_first(self, *pages):
         self.data, *remaining = pages
-        if isinstance(self.data, GeoDataFrame):
+        if HAS_GEOPANDAS and isinstance(self.data, GeoDataFrame):
             self.is_gdf = True
         return self if not remaining else self.merge(remaining)
 

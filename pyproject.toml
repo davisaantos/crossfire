@@ -20,7 +20,6 @@ exclude =  ["env-example"]
 python = "^3.9,<3.13"
 geopandas = { version = "^0.13.2", optional = true }
 httpx = "^0.25.0"
-pandas = { version = "^2.1.1", optional = true }
 python-decouple = "^3.5"
 tqdm = "^4.66.1"
 

@@ -1,12 +1,34 @@
 from unittest.mock import Mock, patch
 
-from geopandas import GeoDataFrame
-from pandas import DataFrame, Series
+try:
+    from geopandas import GeoDataFrame
+
+    HAS_GEOPANDAS = True
+except ImportError:
+    HAS_GEOPANDAS = False
+try:
+    from pandas import DataFrame, Series
+
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
 from pytest import raises
-from shapely import Point
+
+try:
+    from shapely import Point
+except ImportError:
+    pass
+from pytest import mark
 
 from crossfire.clients.occurrences import flatten
 from crossfire.errors import NestedColumnError
+
+skip_if_pandas_not_installed = mark.skipif(
+    not HAS_PANDAS, reason="pandas is not installed"
+)
+skip_if_geopandas_not_installed = mark.skipif(
+    not HAS_GEOPANDAS, reason="geopandas is not installed"
+)
 
 DICT_DATA = [
     {
@@ -14,9 +36,11 @@ DICT_DATA = [
         "contextInfo": {"context1": "info1", "context2": "info2"},
     }
 ]
-PD_DATA = DataFrame(DICT_DATA)
-GEOMETRY = [Point(4, 2)]
-GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
+if HAS_PANDAS:
+    PD_DATA = DataFrame(DICT_DATA)
+if HAS_GEOPANDAS:
+    GEOMETRY = [Point(4, 2)]
+    GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
 
 
 def test_flatten_wrong_nested_columns_value_error():
@@ -28,6 +52,7 @@ def test_flatten_with_empty_list():
     assert flatten([]) == []
 
 
+@skip_if_pandas_not_installed
 def test_flatten_with_empty_data_frame():
     with patch("crossfire.clients.occurrences._flatten_df") as mock_flatten_df:
         flatten(DataFrame(), nested_columns=["contextInfo"])
@@ -48,6 +73,7 @@ def test_flatten_dict():
     ]
 
 
+@skip_if_pandas_not_installed
 def test_flatten_pd():
     flattened_pd = flatten(
         PD_DATA, nested_columns=["contextInfo", "neighborhood"]
@@ -65,6 +91,7 @@ def test_flatten_pd():
     )
 
 
+@skip_if_pandas_not_installed
 def test_flatten_df_is_called():
     # There is a bug on Pandas that makes apply fails when called from Series with the default MagicMock
     # more info: https://github.com/pandas-dev/pandas/issues/45298
@@ -83,6 +110,7 @@ def test_flatten_df_is_called():
     mock_flatten_df.assert_called_once()
 
 
+@skip_if_geopandas_not_installed
 def test_flatten_gpd():
     flattened_pd = flatten(
         GEOPD_DATA, nested_columns=["contextInfo", "neighborhood"]

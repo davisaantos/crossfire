@@ -1,3 +1,4 @@
+import importlib
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
@@ -13,6 +14,14 @@ from crossfire.clients import (
     Token,
 )
 from crossfire.parser import UnknownFormatError
+
+if importlib.util.find_spec("pandas"):
+    HAS_PANDAS = True
+else:
+    HAS_PANDAS = False
+skip_if_pandas_not_installed = mark.skipif(
+    not HAS_PANDAS, reason="pandas is not installed"
+)
 
 
 def test_client_initiates_with_proper_credentials(client):
@@ -154,6 +163,7 @@ async def test_async_client_load_states(state_client_and_get_mock):
     assert not metadata.has_next_page
 
 
+@skip_if_pandas_not_installed
 @mark.asyncio
 async def test_async_client_load_states_as_df(state_client_and_get_mock):
     client, mock = state_client_and_get_mock

@@ -100,7 +100,7 @@ def test_parse_response_uses_geodataframe_when_specified():
     assert isinstance(data, GeoDataFrame)
 
 
-@skip_if_pandas_not_installed
+@skip_if_geopandas_not_installed
 def test_parse_response_raises_error_when_missing_coordinates():
     with raises(IncompatibleDataError):
         parse_response(create_response(), format="geodf")

@@ -2,23 +2,18 @@ from unittest.mock import Mock, patch
 
 try:
     from geopandas import GeoDataFrame
+    from shapely import Point
 
     HAS_GEOPANDAS = True
-except ImportError:
+except ModuleNotFoundError:
     HAS_GEOPANDAS = False
 try:
     from pandas import DataFrame, Series
 
     HAS_PANDAS = True
-except ImportError:
+except ModuleNotFoundError:
     HAS_PANDAS = False
-from pytest import raises
-
-try:
-    from shapely import Point
-except ImportError:
-    pass
-from pytest import mark
+from pytest import mark, raises
 
 from crossfire.clients.occurrences import flatten
 from crossfire.errors import NestedColumnError

@@ -181,11 +181,26 @@ class Accumulator:
         return self.data
 
 
-def _flatten_df(row, column_name):
-    column_data = row[column_name]
-    return Series(
-        {f"{column_name}_{key}": value for key, value in column_data.items()}
-    )
+def _flatten_df(data, nested_columns):
+    def _flatten_col(row, column_name):
+        column_data = row[column_name]
+        return Series(
+            {
+                f"{column_name}_{key}": value
+                for key, value in column_data.items()
+            }
+        )
+
+    keys = set(data.columns) & nested_columns
+    for key in keys:
+        data = concat(
+            [
+                data.drop(key, axis=1),
+                data.apply(_flatten_col, args=(key,), axis=1),
+            ],
+            axis=1,
+        )
+    return data
 
 
 def is_empty(data):
@@ -201,16 +216,7 @@ def flatten(data, nested_columns=None):
     if is_empty(data):
         return data
     if HAS_PANDAS and isinstance(data, DataFrame):
-        keys = set(data.columns) & nested_columns
-        for key in keys:
-            data = concat(
-                (
-                    data.drop(key, axis=1),
-                    data.apply(_flatten_df, args=(key,), axis=1),
-                ),
-                axis=1,
-            )
-
+        data = _flatten_df(data, nested_columns)
         return data
 
     keys = set(data[0].keys()) & nested_columns

@@ -17,15 +17,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
-      - name: Install all dependencies
+      - name: Install dependencies
         run: |
           poetry install --all-extras
-      - name: Run tests
-        run: |
-          poetry run pytest
-      - name: Install basic dependencies
-        run: |
-          poetry install
       - name: Run tests
         run: |
           poetry run pytest

@@ -24,6 +24,7 @@ jobs:
         run: |
           poetry run pytest
   build_with_pandas_only:
+    needs: build_with_basic_dependencies
     runs-on: ubuntu-latest
     strategy:
       matrix:

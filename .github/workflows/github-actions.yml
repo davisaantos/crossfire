@@ -3,7 +3,7 @@ name: 'Check test, code style and linter'
   - push
   - pull_request
 jobs:
-  build:
+  build_with_basic_dependencies:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,9 +17,29 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
-      - name: Install dependencies
+      - name: Install basic dependencies
         run: |
-          poetry install --all-extras
+          poetry install
+      - name: Run tests
+        run: |
+          poetry run pytest
+  build_with_pandas_only:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    name: Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+      - name: Install pandas dependencies
+        run: |
+          poetry install --extras "df"
       - name: Run tests
         run: |
           poetry run pytest

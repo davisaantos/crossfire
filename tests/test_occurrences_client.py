@@ -6,16 +6,19 @@ try:
     HAS_GEOPANDAS = True
 except ImportError:
     HAS_GEOPANDAS = False
+
 try:
     from pandas import DataFrame
 
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
+
 try:
     from pandas.testing import assert_frame_equal
 except ImportError:
     pass
+
 from pytest import mark, raises
 
 from crossfire.clients.occurrences import (

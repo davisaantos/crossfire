@@ -14,6 +14,7 @@ try:
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
+
 from pytest import mark, raises
 
 from crossfire.parser import (

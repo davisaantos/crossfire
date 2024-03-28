@@ -45,6 +45,7 @@ jobs:
         run: |
           poetry run pytest
   build_with_pandas_and_geopandas:
+    needs: [build_with_basic_dependencies, build_with_pandas_only]
     runs-on: ubuntu-latest
     strategy:
       matrix:

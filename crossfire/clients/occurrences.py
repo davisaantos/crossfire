@@ -203,6 +203,15 @@ def _flatten_df(data, nested_columns):
     return data
 
 
+def _flatten_list(data, nested_columns):
+    keys = set(data[0].keys()) & nested_columns
+    for item in data:
+        for key in keys:
+            item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
+            item.pop(key)
+    return data
+
+
 def is_empty(data):
     if HAS_PANDAS and isinstance(data, DataFrame):
         return data.empty
@@ -219,9 +228,5 @@ def flatten(data, nested_columns=None):
         data = _flatten_df(data, nested_columns)
         return data
 
-    keys = set(data[0].keys()) & nested_columns
-    for item in data:
-        for key in keys:
-            item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
-            item.pop(key)
+    data = _flatten_list(data, nested_columns)
     return data

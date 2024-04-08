@@ -31,11 +31,45 @@ DICT_DATA = [
         "contextInfo": {"context1": "info1", "context2": "info2"},
     }
 ]
+EXPECTED_DICT_RETURN = [
+    {
+        "answer": 42,
+        "contextInfo_context1": "info1",
+        "contextInfo_context2": "info2",
+    }
+]
 if HAS_PANDAS:
     PD_DATA = DataFrame(DICT_DATA)
+    EXPECTED_PD_RETURN = DataFrame(
+        [
+            {
+                "answer": 42,
+                "contextInfo_context1": "info1",
+                "contextInfo_context2": "info2",
+            }
+        ]
+    )
 if HAS_GEOPANDAS:
     GEOMETRY = [Point(4, 2)]
     GEOPD_DATA = GeoDataFrame(DICT_DATA, crs="EPSG:4326", geometry=GEOMETRY)
+    EXPECTED_GEOPD_RETURN = GeoDataFrame(
+        [
+            {
+                "answer": 42,
+                "contextInfo_context1": "info1",
+                "contextInfo_context2": "info2",
+            }
+        ],
+        crs="EPSG:4326",
+        geometry=GEOMETRY,
+    ).reindex(
+        columns=(
+            "answer",
+            "geometry",
+            "contextInfo_context1",
+            "contextInfo_context2",
+        )
+    )
 
 
 def test_flatten_wrong_nested_columns_value_error():
@@ -59,13 +93,7 @@ def test_flatten_dict():
     flattened_dict = flatten(
         DICT_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    assert flattened_dict == [
-        {
-            "answer": 42,
-            "contextInfo_context1": "info1",
-            "contextInfo_context2": "info2",
-        }
-    ]
+    assert flattened_dict == EXPECTED_DICT_RETURN
 
 
 @skip_if_pandas_not_installed
@@ -73,17 +101,7 @@ def test_flatten_pd():
     flattened_pd = flatten(
         PD_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    assert flattened_pd.equals(
-        DataFrame(
-            [
-                {
-                    "answer": 42,
-                    "contextInfo_context1": "info1",
-                    "contextInfo_context2": "info2",
-                }
-            ]
-        )
-    )
+    assert flattened_pd.equals(EXPECTED_PD_RETURN)
 
 
 @skip_if_pandas_not_installed
@@ -110,23 +128,22 @@ def test_flatten_gpd():
     flattened_pd = flatten(
         GEOPD_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    result = GeoDataFrame(
-        [
-            {
-                "answer": 42,
-                "contextInfo_context1": "info1",
-                "contextInfo_context2": "info2",
-            }
-        ],
-        crs="EPSG:4326",
-        geometry=GEOMETRY,
-    )
-    result = result.reindex(
-        columns=(
-            "answer",
-            "geometry",
-            "contextInfo_context1",
-            "contextInfo_context2",
-        )
-    )
+    result = EXPECTED_GEOPD_RETURN
     assert flattened_pd.equals(result)
+
+
+def test_flatten_list_is_called():
+    with patch(
+        "crossfire.clients.occurrences._flatten_list"
+    ) as mock_flatten_list:
+        flatten(DICT_DATA, nested_columns=["contextInfo", "neighborhood"])
+
+    mock_flatten_list.assert_called_once()
+
+
+def test_flatten_list():
+    result = EXPECTED_DICT_RETURN
+    assert (
+        flatten(DICT_DATA, nested_columns=["contextInfo", "neighborhood"])
+        == result
+    )

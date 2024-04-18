@@ -125,6 +125,40 @@ occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef', format='geodf')
 | `format` | ❌ | Format of the result | string | `'dict'` | `'dict'`, `'df'` or `'geodf'`                                                                                                  |
 
 
+#### Flattening `Occurrences` columns
+
+The flatten function is designed to simplify the analysis of occurrence data by flattening nested information found in specific columns. Nested information is commonly found in columns such as `contextInfo`, `state`, `region`, `city`, `neighborhood`, and `locality`.
+
+So, to access information about the contexto of occurrences, for an instance, identify its main reason, one might need to access the `contextInfo` column and then the `mainReason` key. The flatten function simplifies this process by creating new columns with the nested information as suffixes.
+
+##### Usages
+
+```python
+from crossfire.clients.occurrences import flatten
+flatten(data, nested_columns=None)
+```
+
+* `data`: The input data containing occurrence information.  
+* `nested_columns` (optional): A list of column names to be flattened. If no columns are specified, all columns containing nested information will be flattened. If the column name is not in the list of columns with nested information, the function will raise an `NestedColumnError`.
+
+The function returns occurrences with the flattened columns. Each flattened column retains the original column name as a prefix and nested column as a suffix. For example, the `contextInfo` column will be flattened into `contextInfo_mainReason`, `contextInfo_complementaryReasons`, `contextInfo_clippings`, `contextInfo_massacre`, and `contextInfo_policeUnit`.
+
+
+##### Example
+
+```python
+from crossfire import occurrences
+from crossfire.clients.occurrences import flatten
+
+occs = occurrences('813ca36b-91e3-4a18-b408-60b27a1942ef')
+occs[0].keys()
+# dict_keys(['id', 'documentNumber', 'address', 'state', 'region', 'city', 'neighborhood', 'subNeighborhood', 'locality', 'latitude', 'longitude', 'date', 'policeAction', 'agentPresence', 'relatedRecord', 'contextInfo', 'transports', 'victims', 'animalVictims'])
+flattened_occs = flatten(occs, nested_columns=['contextInfo'])
+occs[0].keys()
+# dict_keys(['id', 'documentNumber', 'address', 'state', 'region', 'city', 'neighborhood', 'subNeighborhood', 'locality', 'latitude', 'longitude', 'date', 'policeAction', 'agentPresence', 'relatedRecord', 'transports', 'victims', 'animalVictims', 'contextInfo_mainReason', 'contextInfo_complementaryReasons', 'contextInfo_clippings', 'contextInfo_massacre', 'contextInfo_policeUnit'])
+```
+
+
 ### Custom client
 
 If not using the environment variables for authentication, it is recommended to use a custom client:

@@ -31,6 +31,16 @@ DICT_DATA = [
         "contextInfo": {"context1": "info1", "context2": "info2"},
     }
 ]
+DICT_DATA_MISSING_NESTED_VALUE = [
+    {
+        "answer": 42,
+        "contextInfo": {"context1": "info1"},
+    },
+    {
+        "answer": 42,
+        "contextInfo": None,
+    },
+]
 EXPECTED_DICT_RETURN = [
     {
         "answer": 42,
@@ -145,5 +155,21 @@ def test_flatten_list():
     result = EXPECTED_DICT_RETURN
     assert (
         flatten(DICT_DATA, nested_columns=["contextInfo", "neighborhood"])
+        == result
+    )
+
+
+def test_flatten_dict_with_rows_missing_nested_values():
+    result = [
+        {
+            "answer": 42,
+            "contextInfo_context1": "info1",
+        },
+        {
+            "answer": 42,
+        },
+    ]
+    assert (
+        flatten(DICT_DATA_MISSING_NESTED_VALUE, nested_columns=["contextInfo"])
         == result
     )

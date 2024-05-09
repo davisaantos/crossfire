@@ -167,7 +167,6 @@ def test_flatten_dict_with_rows_missing_nested_values():
         },
         {
             "answer": 42,
-            "contextInfo": None,
         },
     ]
     assert (

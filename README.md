@@ -135,7 +135,7 @@ So, to access information about the contexto of occurrences, for an instance, id
 
 ```python
 from crossfire.clients.occurrences import flatten
-flatten(data, nested_columns=None)
+flatten(data)
 ```
 
 * `data`: The input data containing occurrence information.  

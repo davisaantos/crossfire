@@ -195,7 +195,7 @@ def _flatten_df(data, nested_columns):
     for key in keys:
         data = concat(
             [
-                data,
+                data.drop(key, axis=1),
                 data.apply(_flatten_col, args=(key,), axis=1),
             ],
             axis=1,

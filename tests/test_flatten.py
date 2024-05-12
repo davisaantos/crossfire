@@ -65,6 +65,7 @@ if HAS_PANDAS:
         [
             {
                 "answer": 42,
+                "contextInfo": {"context1": "info1", "context2": "info2"},
                 "contextInfo_context1": "info1",
                 "contextInfo_context2": "info2",
             }
@@ -77,6 +78,7 @@ if HAS_GEOPANDAS:
         [
             {
                 "answer": 42,
+                "contextInfo": {"context1": "info1", "context2": "info2"},
                 "contextInfo_context1": "info1",
                 "contextInfo_context2": "info2",
             }
@@ -86,6 +88,7 @@ if HAS_GEOPANDAS:
     ).reindex(
         columns=(
             "answer",
+            "contextInfo",
             "geometry",
             "contextInfo_context1",
             "contextInfo_context2",

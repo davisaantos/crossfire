@@ -54,6 +54,7 @@ DICT_DATA_ALL_ROWS_MISSING_NESTED_VALUE = [
 EXPECTED_DICT_RETURN = [
     {
         "answer": 42,
+        "contextInfo": {"context1": "info1", "context2": "info2"},
         "contextInfo_context1": "info1",
         "contextInfo_context2": "info2",
     }
@@ -173,10 +174,12 @@ def test_flatten_dict_with_rows_missing_nested_values():
     result = [
         {
             "answer": 42,
+            "contextInfo": {"context1": "info1"},
             "contextInfo_context1": "info1",
         },
         {
             "answer": 42,
+            "contextInfo": None,
         },
     ]
     assert (

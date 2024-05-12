@@ -139,7 +139,7 @@ flatten(data, nested_columns=["contextInfo"])
 ```
 
 * `data`: The input data containing occurrence information.  
-* `nested_columns` (optional): A list of column names to be flattened. If no columns are specified, all columns containing nested information will be flattened. If the column name is not in the list of columns with nested information, the function will raise an `NestedColumnError`.
+* `nested_columns`: A list of column names to be flattened. If no columns are specified, all columns containing nested information will be flattened. If the column name is not in the list of columns with nested information, the function will raise an `NestedColumnError`.
 
 The function returns occurrences with the flattened columns. Each flattened column retains the original column name as a prefix and nested column as a suffix. For example, the `contextInfo` column will be flattened into `contextInfo_mainReason`, `contextInfo_complementaryReasons`, `contextInfo_clippings`, `contextInfo_massacre`, and `contextInfo_policeUnit`.
 
@@ -155,7 +155,7 @@ occs[0].keys()
 # dict_keys(['id', 'documentNumber', 'address', 'state', 'region', 'city', 'neighborhood', 'subNeighborhood', 'locality', 'latitude', 'longitude', 'date', 'policeAction', 'agentPresence', 'relatedRecord', 'contextInfo', 'transports', 'victims', 'animalVictims'])
 flattened_occs = flatten(occs, nested_columns=['contextInfo'])
 occs[0].keys()
-# dict_keys(['id', 'documentNumber', 'address', 'state', 'region', 'city', 'neighborhood', 'subNeighborhood', 'locality', 'latitude', 'longitude', 'date', 'policeAction', 'agentPresence', 'relatedRecord', 'transports', 'victims', 'animalVictims', 'contextInfo_mainReason', 'contextInfo_complementaryReasons', 'contextInfo_clippings', 'contextInfo_massacre', 'contextInfo_policeUnit'])
+# dict_keys(['id', 'documentNumber', 'address', 'state', 'region', 'city', 'neighborhood', 'subNeighborhood', 'locality', 'latitude', 'longitude', 'date', 'policeAction', 'agentPresence', 'relatedRecord', 'transports', 'victims', 'animalVictims', 'contextInfo', 'contextInfo_mainReason', 'contextInfo_complementaryReasons', 'contextInfo_clippings', 'contextInfo_massacre', 'contextInfo_policeUnit'])
 ```
 
 

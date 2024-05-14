@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from time import sleep
 from unittest.mock import patch
 
 from decouple import UndefinedValueError
@@ -256,6 +257,32 @@ async def test_async_client_occurrences(occurrences_client_and_get_mock):
         "http://127.0.0.1/api/v2/occurrences?idState=42&typeOccurrence=all&page=1",
         headers={"Authorization": "Bearer 42"},
     )
+
+
+@mark.asyncio
+async def test_client_runs_when_async_loop_is_running():
+    # first let's set an async task to be running in parallel
+    done = False
+
+    async def async_task():
+        while not done:
+            sleep(0.1)
+
+    task = async_task()
+
+    # with some async task running, let's run our client, which that requires an
+    # async loop
+    with patch("crossfire.clients.config") as config_mock:
+        with patch.object(AsyncClient, "states") as async_states_mock:
+            config_mock.side_effect = ("email", "password")
+            async_states_mock.return_value = ("forty-two", 42)
+            client = Client()
+            client.states(format=None)
+            async_states_mock.assert_called_with(format=None)
+
+    # finally, lets tear down our dummy async task
+    done = True
+    await task
 
 
 def test_client_load_states():

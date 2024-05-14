@@ -207,12 +207,13 @@ def _flatten_list(data, nested_columns):
     keys = set(data[0].keys()) & nested_columns
     for item in data:
         for key in keys:
-            if key in item:
-                value = item.get(key)
-                if value:
-                    item.update(
-                        {f"{key}_{k}": v for k, v in value.items() if v}
-                    )
+            if key not in item:
+                return data
+            value = item.get(key)
+            if not value:
+                return data
+
+            item.update({f"{key}_{k}": v for k, v in value.items() if v})
     return data
 
 

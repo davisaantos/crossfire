@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 import httpx
 from decouple import UndefinedValueError, config
+from nest_asyncio import apply
 
 from crossfire.clients.occurrences import Occurrences
 from crossfire.errors import CrossfireError, RetryAfterError
@@ -135,6 +136,7 @@ class Client(AsyncClient):
             password=password,
             max_parallel_requests=max_parallel_requests,
         )
+        apply()
 
     def states(self, format=None):
         loop = get_event_loop()

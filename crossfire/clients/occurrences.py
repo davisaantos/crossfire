@@ -184,6 +184,9 @@ class Accumulator:
 def _flatten_df(data, nested_columns):
     def _flatten_col(row, column_name):
         column_data = row[column_name]
+        if not column_data:
+            return Series()
+
         return Series(
             {
                 f"{column_name}_{key}": value
@@ -192,10 +195,12 @@ def _flatten_df(data, nested_columns):
         )
 
     keys = set(data.columns) & nested_columns
+    if not keys:
+        return data
     for key in keys:
         data = concat(
             [
-                data.drop(key, axis=1),
+                data,
                 data.apply(_flatten_col, args=(key,), axis=1),
             ],
             axis=1,

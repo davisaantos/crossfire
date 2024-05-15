@@ -9,6 +9,7 @@ except ModuleNotFoundError:
     HAS_GEOPANDAS = False
 try:
     from pandas import DataFrame, Series
+    from pandas.testing import assert_frame_equal
 
     HAS_PANDAS = True
 except ModuleNotFoundError:
@@ -59,16 +60,26 @@ EXPECTED_DICT_RETURN = [
         "contextInfo_context2": "info2",
     }
 ]
+EXPECTED_DICT_MISSING_NESTED_VALUE_RETURN = [
+    {
+        "answer": 42,
+        "contextInfo": {"context1": "info1"},
+        "contextInfo_context1": "info1",
+    },
+    {
+        "answer": 42,
+        "contextInfo": None,
+    },
+]
 if HAS_PANDAS:
     PD_DATA = DataFrame(DICT_DATA)
-    EXPECTED_PD_RETURN = DataFrame(
-        [
-            {
-                "answer": 42,
-                "contextInfo_context1": "info1",
-                "contextInfo_context2": "info2",
-            }
-        ]
+    PD_DATA_MISSING_NESTED_VALUE = DataFrame(DICT_DATA_MISSING_NESTED_VALUE)
+    PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE = DataFrame(
+        DICT_DATA_ALL_ROWS_MISSING_NESTED_VALUE
+    )
+    EXPECTED_PD_RETURN = DataFrame(EXPECTED_DICT_RETURN)
+    EXPECTED_PD_MISSING_NESTED_VALUE_RETURN = DataFrame(
+        EXPECTED_DICT_MISSING_NESTED_VALUE_RETURN
     )
 if HAS_GEOPANDAS:
     GEOMETRY = [Point(4, 2)]
@@ -77,6 +88,7 @@ if HAS_GEOPANDAS:
         [
             {
                 "answer": 42,
+                "contextInfo": {"context1": "info1", "context2": "info2"},
                 "contextInfo_context1": "info1",
                 "contextInfo_context2": "info2",
             }
@@ -86,6 +98,7 @@ if HAS_GEOPANDAS:
     ).reindex(
         columns=(
             "answer",
+            "contextInfo",
             "geometry",
             "contextInfo_context1",
             "contextInfo_context2",
@@ -122,7 +135,7 @@ def test_flatten_pd():
     flattened_pd = flatten(
         PD_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    assert flattened_pd.equals(EXPECTED_PD_RETURN)
+    assert_frame_equal(flattened_pd, EXPECTED_PD_RETURN)
 
 
 @skip_if_pandas_not_installed
@@ -149,8 +162,7 @@ def test_flatten_gpd():
     flattened_pd = flatten(
         GEOPD_DATA, nested_columns=["contextInfo", "neighborhood"]
     )
-    result = EXPECTED_GEOPD_RETURN
-    assert flattened_pd.equals(result)
+    assert_frame_equal(flattened_pd, EXPECTED_GEOPD_RETURN)
 
 
 def test_flatten_list_is_called():
@@ -171,38 +183,33 @@ def test_flatten_list():
 
 
 def test_flatten_dict_with_rows_missing_nested_values():
-    result = [
-        {
-            "answer": 42,
-            "contextInfo": {"context1": "info1"},
-            "contextInfo_context1": "info1",
-        },
-        {
-            "answer": 42,
-            "contextInfo": None,
-        },
-    ]
     assert (
         flatten(DICT_DATA_MISSING_NESTED_VALUE, nested_columns=["contextInfo"])
-        == result
+        == EXPECTED_DICT_MISSING_NESTED_VALUE_RETURN
     )
 
 
 def test_flatten_dict_with_all_rows_missing_nested_values():
-    result = [
-        {
-            "answer": 42,
-            "contextInfo": None,
-        },
-        {
-            "answer": 42,
-            "contextInfo": None,
-        },
-    ]
     assert (
         flatten(
             DICT_DATA_ALL_ROWS_MISSING_NESTED_VALUE,
             nested_columns=["contextInfo"],
         )
-        == result
+        == DICT_DATA_ALL_ROWS_MISSING_NESTED_VALUE
     )
+
+
+@skip_if_pandas_not_installed
+def test_flatten_pd_with_missing_nested_values():
+    flattened_pd = flatten(
+        PD_DATA_MISSING_NESTED_VALUE, nested_columns=["contextInfo"]
+    )
+    assert_frame_equal(flattened_pd, EXPECTED_PD_MISSING_NESTED_VALUE_RETURN)
+
+
+@skip_if_pandas_not_installed
+def test_flatten_df_with_all_rows_missing_nested_values():
+    flattened_pd = flatten(
+        PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE, nested_columns=["contextInfo"]
+    )
+    assert_frame_equal(flattened_pd, PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE)

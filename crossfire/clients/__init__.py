@@ -113,6 +113,7 @@ class AsyncClient:
         final_date=None,
         max_parallel_requests=None,
         format=None,
+        flat=False,
     ):
         occurrences = Occurrences(
             self,
@@ -124,6 +125,7 @@ class AsyncClient:
             max_parallel_requests=max_parallel_requests
             or self.max_parallel_requests,
             format=format,
+            flat=flat,
         )
         return await occurrences()
 
@@ -162,6 +164,7 @@ class Client(AsyncClient):
         final_date=None,
         max_parallel_requests=None,
         format=None,
+        flat=False,
     ):
         loop = get_event_loop()
         occurrences = loop.run_until_complete(
@@ -173,6 +176,7 @@ class Client(AsyncClient):
                 final_date=final_date,
                 max_parallel_requests=max_parallel_requests,
                 format=format,
+                flat=flat,
             )
         )
         return occurrences

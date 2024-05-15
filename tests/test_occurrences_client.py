@@ -262,3 +262,47 @@ def test_date_formatter_with_python_datetime_format():
     formatted_date = date_formatter(date)
     assert isinstance(formatted_date, datetime.date)
     assert str(formatted_date) == "2023-01-23"
+
+
+@mark.asyncio
+async def test_occurrences_as_list_dicts_with_flat_parameter(
+    occurrences_client_and_get_mock,
+):
+    client_mock, _ = occurrences_client_and_get_mock
+    occurrences = Occurrences(client_mock, id_state=42, flat=True)
+    occs = await occurrences()
+    assert occs == [
+        {
+            "id": "a7bfebed-ce9c-469d-a656-924ed8248e95",
+            "latitude": "-8.1576367000",
+            "longitude": "-34.9696372000",
+            "contextInfo": {"context1": "info1", "context2": "info2"},
+            "contextInfo_context1": "info1",
+            "contextInfo_context2": "info2",
+        },
+    ]
+
+
+@skip_if_pandas_not_installed
+@mark.asyncio
+async def test_occurrences_as_df_with_flat_parameter(
+    occurrences_client_and_get_mock,
+):
+    client_mock, _ = occurrences_client_and_get_mock
+    occurrences = Occurrences(client_mock, id_state=42, format="df", flat=True)
+    occs = await occurrences()
+    assert_frame_equal(
+        occs,
+        DataFrame(
+            [
+                {
+                    "id": "a7bfebed-ce9c-469d-a656-924ed8248e95",
+                    "latitude": "-8.1576367000",
+                    "longitude": "-34.9696372000",
+                    "contextInfo": {"context1": "info1", "context2": "info2"},
+                    "contextInfo_context1": "info1",
+                    "contextInfo_context2": "info2",
+                },
+            ]
+        ),
+    )

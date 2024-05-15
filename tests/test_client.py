@@ -320,4 +320,5 @@ def test_client_load_occurrences():
                 final_date=None,
                 max_parallel_requests=None,
                 format=None,
+                flat=False,
             )

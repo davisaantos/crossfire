@@ -51,6 +51,7 @@ def test_occurrences_with_default_args():
             initial_date=None,
             final_date=None,
             format=None,
+            flat=False,
         )
 
 
@@ -64,6 +65,7 @@ def test_occurrences_with_custom_args():
             final_date="2023-01-31",
             max_parallel_requests=10,
             format="df",
+            flat=True,
         )
         mock.return_value.occurrences.assert_called_once_with(
             "42",
@@ -73,4 +75,5 @@ def test_occurrences_with_custom_args():
             final_date="2023-01-31",
             max_parallel_requests=10,
             format="df",
+            flat=True,
         )

@@ -80,12 +80,14 @@ class Occurrences:
         final_date=None,
         max_parallel_requests=None,
         format=None,
+        flat=False,
     ):
         if type_occurrence not in TYPE_OCCURRENCES:
             raise UnknownTypeOccurrenceError(type_occurrence)
 
         self.client = client
         self.format = format
+        self.flat = flat
         self.params = {"idState": id_state, "typeOccurrence": type_occurrence}
         if id_cities:
             self.params["idCities"] = id_cities
@@ -147,6 +149,8 @@ class Occurrences:
             pages = await gather(*requests)
             data.merge(*pages)
 
+        if self.flat:
+            return flatten(data())
         return data()
 
 

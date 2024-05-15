@@ -29,6 +29,7 @@ def occurrences(
     final_date=None,
     max_parallel_requests=None,
     format=None,
+    flat=False,
 ):
     return client().occurrences(
         id_state,
@@ -38,4 +39,5 @@ def occurrences(
         final_date=final_date,
         max_parallel_requests=max_parallel_requests,
         format=format,
+        flat=flat,
     )

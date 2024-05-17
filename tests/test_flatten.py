@@ -1,3 +1,4 @@
+from copy import deepcopy
 from unittest.mock import Mock, patch
 
 try:
@@ -250,9 +251,10 @@ def test_flatten_df_with_all_rows_missing_nested_values():
 
 
 def test_flatten_list_dicts_with_nested_columns_with_nested_values():
+    data = [deepcopy(d) for d in DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS]
     assert (
         flatten(
-            DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS,
+            data,
             nested_columns=["contextInfo"],
         )
         == EXPECTED_DICT_RETURN_WITH_NESTED_VALUES_IN_NESTED_COLUMNS
@@ -261,12 +263,12 @@ def test_flatten_list_dicts_with_nested_columns_with_nested_values():
 
 @skip_if_pandas_not_installed
 def test_flatten_pd_with_nested_columns_with_nested_values():
-    flattened_pd = flatten(
-        DataFrame(DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS),
-        nested_columns=["contextInfo"],
-    )
-    flattened_pd.columns
+    data = [deepcopy(d) for d in DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS]
+
     assert_frame_equal(
-        flattened_pd,
+        flatten(
+            DataFrame(data),
+            nested_columns=["contextInfo"],
+        ),
         DataFrame(EXPECTED_DICT_RETURN_WITH_NESTED_VALUES_IN_NESTED_COLUMNS),
     )

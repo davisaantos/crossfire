@@ -223,6 +223,9 @@ def _flatten_list(data, nested_columns):
                 return data
 
             item.update({f"{key}_{k}": v for k, v in value.items() if v})
+            for k, v in value.items():
+                if isinstance(value, dict):
+                    item.update({f"{key}_{k}_{subkey}": v for subkey, v in v.items() if v})
     return data
 
 

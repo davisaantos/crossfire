@@ -213,3 +213,30 @@ def test_flatten_df_with_all_rows_missing_nested_values():
         PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE, nested_columns=["contextInfo"]
     )
     assert_frame_equal(flattened_pd, PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE)
+
+
+# write a test that checks if the function _flatten_list will flat the value of a flattened column
+def test_flatten_list_dicts_with_nested_columns_with_nested_values():
+    data = [
+        {
+            "answer": 42,
+            "contextInfo": {
+                "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
+            },
+        }
+    ]
+    result = [
+        {
+            "answer": 42,
+            "contextInfo": {
+                "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
+            },
+            "contextInfo_mainReason": {
+                "mainReason1": "info1",
+                "mainReason2": "info2",
+            },
+            "contextInfo_mainReason_mainReason1": "info1",
+            "contextInfo_mainReason_mainReason2": "info2",
+        }
+    ]
+    assert flatten(data, nested_columns=["contextInfo"]) == result

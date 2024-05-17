@@ -191,12 +191,27 @@ def _flatten_df(data, nested_columns):
         if not column_data:
             return Series()
 
-        return Series(
+        flatenned_series = Series(
             {
                 f"{column_name}_{key}": value
                 for key, value in column_data.items()
             }
         )
+        for key, value in column_data.items():
+            if isinstance(value, dict):
+                flatenned_series = concat(
+                    [
+                        flatenned_series,
+                        Series(
+                            {
+                                f"{column_name}_{key}_{subkey}": v
+                                for subkey, v in value.items()
+                            },
+                        ),
+                    ],
+                    axis=0,
+                )
+        return flatenned_series
 
     keys = set(data.columns) & nested_columns
     if not keys:
@@ -224,8 +239,14 @@ def _flatten_list(data, nested_columns):
 
             item.update({f"{key}_{k}": v for k, v in value.items() if v})
             for k, v in value.items():
-                if isinstance(value, dict):
-                    item.update({f"{key}_{k}_{subkey}": v for subkey, v in v.items() if v})
+                if isinstance(v, dict):
+                    item.update(
+                        {
+                            f"{key}_{k}_{subkey}": v
+                            for subkey, v in v.items()
+                            if v
+                        }
+                    )
     return data
 
 

@@ -52,6 +52,16 @@ DICT_DATA_ALL_ROWS_MISSING_NESTED_VALUE = [
         "contextInfo": None,
     },
 ]
+DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS = [
+    {
+        "answer": 42,
+        "contextInfo": {
+            "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
+        },
+    },
+    {"answer": 42, "contextInfo": {"mainReason": "mainReason1"}},
+    {"answer": 42, "contextInfo": None},
+]
 EXPECTED_DICT_RETURN = [
     {
         "answer": 42,
@@ -71,6 +81,30 @@ EXPECTED_DICT_MISSING_NESTED_VALUE_RETURN = [
         "contextInfo": None,
     },
 ]
+EXPECTED_DICT_RETURN_WITH_NESTED_VALUES_IN_NESTED_COLUMNS = [
+    {
+        "answer": 42,
+        "contextInfo": {
+            "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
+        },
+        "contextInfo_mainReason": {
+            "mainReason1": "info1",
+            "mainReason2": "info2",
+        },
+        "contextInfo_mainReason_mainReason1": "info1",
+        "contextInfo_mainReason_mainReason2": "info2",
+    },
+    {
+        "answer": 42,
+        "contextInfo": {"mainReason": "mainReason1"},
+        "contextInfo_mainReason": "mainReason1",
+    },
+    {
+        "answer": 42,
+        "contextInfo": None,
+    },
+]
+
 if HAS_PANDAS:
     PD_DATA = DataFrame(DICT_DATA)
     PD_DATA_MISSING_NESTED_VALUE = DataFrame(DICT_DATA_MISSING_NESTED_VALUE)
@@ -215,28 +249,24 @@ def test_flatten_df_with_all_rows_missing_nested_values():
     assert_frame_equal(flattened_pd, PD_DATA_ALL_ROWS_MISSING_NESTED_VALUE)
 
 
-# write a test that checks if the function _flatten_list will flat the value of a flattened column
 def test_flatten_list_dicts_with_nested_columns_with_nested_values():
-    data = [
-        {
-            "answer": 42,
-            "contextInfo": {
-                "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
-            },
-        }
-    ]
-    result = [
-        {
-            "answer": 42,
-            "contextInfo": {
-                "mainReason": {"mainReason1": "info1", "mainReason2": "info2"}
-            },
-            "contextInfo_mainReason": {
-                "mainReason1": "info1",
-                "mainReason2": "info2",
-            },
-            "contextInfo_mainReason_mainReason1": "info1",
-            "contextInfo_mainReason_mainReason2": "info2",
-        }
-    ]
-    assert flatten(data, nested_columns=["contextInfo"]) == result
+    assert (
+        flatten(
+            DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS,
+            nested_columns=["contextInfo"],
+        )
+        == EXPECTED_DICT_RETURN_WITH_NESTED_VALUES_IN_NESTED_COLUMNS
+    )
+
+
+@skip_if_pandas_not_installed
+def test_flatten_pd_with_nested_columns_with_nested_values():
+    flattened_pd = flatten(
+        DataFrame(DICT_DATA_WITH_NESTED_VALUES_IN_NESTED_COLUMNS),
+        nested_columns=["contextInfo"],
+    )
+    flattened_pd.columns
+    assert_frame_equal(
+        flattened_pd,
+        DataFrame(EXPECTED_DICT_RETURN_WITH_NESTED_VALUES_IN_NESTED_COLUMNS),
+    )

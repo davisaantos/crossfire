@@ -4,16 +4,6 @@ __all__ = ("AsyncClient", "Client", "cities", "occurrences", "states")
 from functools import lru_cache
 
 from crossfire.clients import AsyncClient, Client  # noqa
-from crossfire.errors import NestedColumnError
-
-NESTED_COLUMNS = {
-    "contextInfo",
-    "state",
-    "region",
-    "city",
-    "neighborhood",
-    "locality",
-}
 
 
 @lru_cache(maxsize=1)
@@ -39,6 +29,7 @@ def occurrences(
     final_date=None,
     max_parallel_requests=None,
     format=None,
+    flat=False,
 ):
     return client().occurrences(
         id_state,
@@ -48,19 +39,5 @@ def occurrences(
         final_date=final_date,
         max_parallel_requests=max_parallel_requests,
         format=format,
+        flat=flat,
     )
-
-
-def flatten(data, nested_columns=None):
-    nested_columns = set(nested_columns or NESTED_COLUMNS)
-    if not nested_columns.issubset(NESTED_COLUMNS):
-        raise NestedColumnError(nested_columns)
-    if not data:
-        return data
-    if isinstance(data, list):
-        keys = set(data[0].keys()) & nested_columns
-        for item in data:
-            for key in keys:
-                item.update({f"{key}_{k}": v for k, v in item.get(key).items()})
-                item.pop(key)
-        return data

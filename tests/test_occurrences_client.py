@@ -1,8 +1,24 @@
 import datetime
 
-from geopandas import GeoDataFrame
-from pandas import DataFrame
-from pandas.testing import assert_frame_equal
+try:
+    from geopandas import GeoDataFrame
+
+    HAS_GEOPANDAS = True
+except ImportError:
+    HAS_GEOPANDAS = False
+
+try:
+    from pandas import DataFrame
+
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+
+try:
+    from pandas.testing import assert_frame_equal
+except ImportError:
+    pass
+
 from pytest import mark, raises
 
 from crossfire.clients.occurrences import (
@@ -12,6 +28,13 @@ from crossfire.clients.occurrences import (
     date_formatter,
 )
 from crossfire.errors import DateFormatError, DateIntervalError
+
+skip_if_pandas_not_installed = mark.skipif(
+    not HAS_PANDAS, reason="pandas is not installed"
+)
+skip_if_geopandas_not_installed = mark.skipif(
+    not HAS_GEOPANDAS, reason="geopandas is not installed"
+)
 
 
 def dummy_response(total_pages, last_page):
@@ -42,6 +65,7 @@ def test_occurrences_accumulator_for_lists():
     assert accumulator() == [1, 2, 3]
 
 
+@skip_if_pandas_not_installed
 def test_occurrences_accumulator_for_df():
     accumulator = Accumulator()
     accumulator.merge(DataFrame([{"a": 1}]))
@@ -49,6 +73,7 @@ def test_occurrences_accumulator_for_df():
     assert_frame_equal(accumulator(), DataFrame([{"a": 1}, {"a": 2}, {"a": 3}]))
 
 
+@skip_if_geopandas_not_installed
 def test_occurrences_accumulator_for_geodf():
     accumulator = Accumulator()
     accumulator.merge(GeoDataFrame([{"a": 1}]))
@@ -134,6 +159,7 @@ async def test_occurrences_without_victims(occurrences_client_and_get_mock):
     )
 
 
+@skip_if_pandas_not_installed
 @mark.asyncio
 async def test_occurrences_with_format_parameter(
     occurrences_client_and_get_mock,
@@ -236,3 +262,47 @@ def test_date_formatter_with_python_datetime_format():
     formatted_date = date_formatter(date)
     assert isinstance(formatted_date, datetime.date)
     assert str(formatted_date) == "2023-01-23"
+
+
+@mark.asyncio
+async def test_occurrences_as_list_dicts_with_flat_parameter(
+    occurrences_client_and_get_mock,
+):
+    client_mock, _ = occurrences_client_and_get_mock
+    occurrences = Occurrences(client_mock, id_state=42, flat=True)
+    occs = await occurrences()
+    assert occs == [
+        {
+            "id": "a7bfebed-ce9c-469d-a656-924ed8248e95",
+            "latitude": "-8.1576367000",
+            "longitude": "-34.9696372000",
+            "contextInfo": {"context1": "info1", "context2": "info2"},
+            "contextInfo_context1": "info1",
+            "contextInfo_context2": "info2",
+        },
+    ]
+
+
+@skip_if_pandas_not_installed
+@mark.asyncio
+async def test_occurrences_as_df_with_flat_parameter(
+    occurrences_client_and_get_mock,
+):
+    client_mock, _ = occurrences_client_and_get_mock
+    occurrences = Occurrences(client_mock, id_state=42, format="df", flat=True)
+    occs = await occurrences()
+    assert_frame_equal(
+        occs,
+        DataFrame(
+            [
+                {
+                    "id": "a7bfebed-ce9c-469d-a656-924ed8248e95",
+                    "latitude": "-8.1576367000",
+                    "longitude": "-34.9696372000",
+                    "contextInfo": {"context1": "info1", "context2": "info2"},
+                    "contextInfo_context1": "info1",
+                    "contextInfo_context2": "info2",
+                },
+            ]
+        ),
+    )

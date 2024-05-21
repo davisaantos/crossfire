@@ -6,15 +6,22 @@ from urllib.parse import urlencode
 from httpx import ReadTimeout
 from tqdm import tqdm
 
+from crossfire.errors import NestedColumnError
+
 try:
-    from pandas import concat
+    from pandas import DataFrame, Series, concat
+
+    HAS_PANDAS = True
 except ImportError:
-    pass
+    HAS_PANDAS = False
+
 
 try:
     from geopandas import GeoDataFrame
+
+    HAS_GEOPANDAS = True
 except ImportError:
-    pass
+    HAS_GEOPANDAS = False
 
 from crossfire.errors import (
     CrossfireError,
@@ -28,6 +35,14 @@ logger = Logger(__name__)
 
 TYPE_OCCURRENCES = {"all", "withVictim", "withoutVictim"}
 NOT_NUMBER = re.compile("\D")
+NESTED_COLUMNS = {
+    "contextInfo",
+    "state",
+    "region",
+    "city",
+    "neighborhood",
+    "locality",
+}
 
 
 def date_formatter(date_parameter):
@@ -65,12 +80,14 @@ class Occurrences:
         final_date=None,
         max_parallel_requests=None,
         format=None,
+        flat=False,
     ):
         if type_occurrence not in TYPE_OCCURRENCES:
             raise UnknownTypeOccurrenceError(type_occurrence)
 
         self.client = client
         self.format = format
+        self.flat = flat
         self.params = {"idState": id_state, "typeOccurrence": type_occurrence}
         if id_cities:
             self.params["idCities"] = id_cities
@@ -132,6 +149,8 @@ class Occurrences:
             pages = await gather(*requests)
             data.merge(*pages)
 
+        if self.flat:
+            return flatten(data())
         return data()
 
 
@@ -142,7 +161,7 @@ class Accumulator:
 
     def save_first(self, *pages):
         self.data, *remaining = pages
-        if isinstance(self.data, GeoDataFrame):
+        if HAS_GEOPANDAS and isinstance(self.data, GeoDataFrame):
             self.is_gdf = True
         return self if not remaining else self.merge(remaining)
 
@@ -164,3 +183,88 @@ class Accumulator:
             return GeoDataFrame(self.data)
 
         return self.data
+
+
+def _flatten_df(data, nested_columns):
+    def _flatten_col(row, column_name):
+        column_data = row[column_name]
+        if not column_data:
+            return Series()
+
+        flatenned_series = Series(
+            {
+                f"{column_name}_{key}": value
+                for key, value in column_data.items()
+            }
+        )
+        for key, value in column_data.items():
+            if isinstance(value, dict):
+                flatenned_series = concat(
+                    [
+                        flatenned_series,
+                        Series(
+                            {
+                                f"{column_name}_{key}_{subkey}": v
+                                for subkey, v in value.items()
+                            },
+                        ),
+                    ],
+                    axis=0,
+                )
+        return flatenned_series
+
+    keys = set(data.columns) & nested_columns
+    if not keys:
+        return data
+    for key in keys:
+        data = concat(
+            [
+                data,
+                data.apply(_flatten_col, args=(key,), axis=1),
+            ],
+            axis=1,
+        )
+    return data
+
+
+def _flatten_list(data, nested_columns):
+    keys = set(data[0].keys()) & nested_columns
+    for item in data:
+        for key in keys:
+            if key not in item:
+                return data
+            value = item.get(key)
+            if not value:
+                return data
+
+            item.update({f"{key}_{k}": v for k, v in value.items() if v})
+            for k, v in value.items():
+                if isinstance(v, dict):
+                    item.update(
+                        {
+                            f"{key}_{k}_{subkey}": v
+                            for subkey, v in v.items()
+                            if v
+                        }
+                    )
+    return data
+
+
+def is_empty(data):
+    if HAS_PANDAS and isinstance(data, DataFrame):
+        return data.empty
+    return not data
+
+
+def flatten(data, nested_columns=None):
+    nested_columns = set(nested_columns or NESTED_COLUMNS)
+    if not nested_columns.issubset(NESTED_COLUMNS):
+        raise NestedColumnError(nested_columns)
+    if is_empty(data):
+        return data
+    if HAS_PANDAS and isinstance(data, DataFrame):
+        data = _flatten_df(data, nested_columns)
+        return data
+
+    data = _flatten_list(data, nested_columns)
+    return data

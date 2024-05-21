@@ -1,9 +1,21 @@
 from json import dumps
 from unittest.mock import Mock, patch
 
-from geopandas import GeoDataFrame
-from pandas import DataFrame
-from pytest import raises
+try:
+    from geopandas import GeoDataFrame
+
+    HAS_GEOPANDAS = True
+except ImportError:
+    HAS_GEOPANDAS = False
+
+try:
+    from pandas import DataFrame
+
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+
+from pytest import mark, raises
 
 from crossfire.parser import (
     IncompatibleDataError,
@@ -13,6 +25,13 @@ from crossfire.parser import (
 
 DATA = [{"answer": 42}]
 GEODATA = [{"answer": 42, "latitude": 4, "longitude": 2}]
+
+skip_if_pandas_not_installed = mark.skipif(
+    not HAS_PANDAS, reason="pandas is not installed"
+)
+skip_if_geopandas_not_installed = mark.skipif(
+    not HAS_GEOPANDAS, reason="geopandas is not installed"
+)
 
 
 class DummyError(Exception):
@@ -70,16 +89,19 @@ def test_parse_response_handles_metadata():
     assert metadata.page_count == 1
 
 
+@skip_if_pandas_not_installed
 def test_parse_response_uses_dataframe_when_specified():
     data, _ = parse_response(create_response(), format="df")
     assert isinstance(data, DataFrame)
 
 
+@skip_if_geopandas_not_installed
 def test_parse_response_uses_geodataframe_when_specified():
     data, _ = parse_response(create_response(True), format="geodf")
     assert isinstance(data, GeoDataFrame)
 
 
+@skip_if_geopandas_not_installed
 def test_parse_response_raises_error_when_missing_coordinates():
     with raises(IncompatibleDataError):
         parse_response(create_response(), format="geodf")

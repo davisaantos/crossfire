@@ -3,12 +3,12 @@ name: 'Check test, code style and linter'
   - push
   - pull_request
 jobs:
-  build:
+  build_with_basic_dependencies:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-    name: Python ${{ matrix.python-version }}
+    name: (basic dependencies) Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -17,9 +17,51 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
-      - name: Install dependencies
+      - name: Install basic dependencies
         run: |
-          poetry install --all-extras
-      - name: Run tests
+          poetry install
+      - name: Run tests with basic dependencies
+        run: |
+          poetry run pytest
+  build_with_pandas_only:
+    needs: build_with_basic_dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    name: (Pandas only) Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+      - name: Install pandas dependencies
+        run: |
+          poetry install --extras "df"
+      - name: Run tests with pandas only
+        run: |
+          poetry run pytest
+  build_with_pandas_and_geopandas:
+    needs: [build_with_basic_dependencies, build_with_pandas_only]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    name: (Pandas & GeoPandas) Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+      - name: Install pandas & geopandas dependencies
+        run: |
+          poetry install --extras "geodf"
+      - name: Run tests with pandas & geopandas
         run: |
           poetry run pytest

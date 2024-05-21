@@ -97,6 +97,7 @@ def occurrences_client_and_get_mock(client_with_token):
                 "id": "a7bfebed-ce9c-469d-a656-924ed8248e95",
                 "latitude": "-8.1576367000",
                 "longitude": "-34.9696372000",
+                "contextInfo": {"context1": "info1", "context2": "info2"},
             },
         ],
     }
